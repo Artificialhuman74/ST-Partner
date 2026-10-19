@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">ST Partner</string>
+    <string name="app_name" translatable="false">ST Delivery</string>
     <string name="brand_tagline">Purity of tradition in every drop</string>
     <string name="emblem_description">Sanathana Tattva emblem</string>
     <!-- ST support line for partners (confirmed by the owner 2026-10-19; same as the website's Support page). -->
@@ -143,7 +143,7 @@
     <string name="signup_use_photo">Use this photo</string>
     <string name="signup_camera_needed">Allow the camera to take your photo.</string>
     <string name="signup_camera_allow">Allow camera</string>
-    <string name="camera_blocked">The camera is turned off for ST Partner. Turn it on in Settings → Permissions → Camera.</string>
+    <string name="camera_blocked">The camera is turned off for ST Delivery. Turn it on in Settings → Permissions → Camera.</string>
     <string name="camera_open_settings">Open settings</string>
     <string name="camera_not_started">The camera didn’t start.</string>
     <string name="camera_shot_failed">Couldn’t take the photo. Try again.</string>
@@ -234,7 +234,7 @@
 
     <!-- Approved / sent back (canvas Approved, Rejected) -->
     <string name="approved_title">You’re approved!</string>
-    <string name="approved_body">Welcome to ST Partner, %1$s. One last step: turn on alerts so you never miss an order.</string>
+    <string name="approved_body">Welcome to ST Delivery, %1$s. One last step: turn on alerts so you never miss an order.</string>
     <string name="approved_cta">Set up alerts</string>
     <plurals name="rejected_heading">
         <item quantity="one">One thing needs fixing</item>
@@ -353,19 +353,19 @@
     <string name="guide_done">I’ve turned it on</string>
     <string name="guide_mi_1_title">Open Apps</string>
     <string name="guide_mi_1_body">In Settings, tap Apps, then Manage apps</string>
-    <string name="guide_mi_2_title">Tap ST Partner</string>
+    <string name="guide_mi_2_title">Tap ST Delivery</string>
     <string name="guide_mi_2_body">Find it in the list of apps</string>
     <string name="guide_mi_3_title">Turn on Autostart</string>
     <string name="guide_mi_3_body">The switch turns green. Then come back here.</string>
     <string name="guide_coloros_1_title">Open Battery</string>
     <string name="guide_coloros_1_body">In Settings, tap Battery, then App battery management</string>
-    <string name="guide_coloros_2_title">Tap ST Partner</string>
+    <string name="guide_coloros_2_title">Tap ST Delivery</string>
     <string name="guide_coloros_2_body">Find it in the list of apps</string>
     <string name="guide_coloros_3_title">Allow auto launch and background</string>
     <string name="guide_coloros_3_body">Turn on Allow auto launch and Allow background activity. Then come back here.</string>
     <string name="guide_vivo_1_title">Open i Manager</string>
     <string name="guide_vivo_1_body">Tap App manager, then Autostart manager</string>
-    <string name="guide_vivo_2_title">Find ST Partner</string>
+    <string name="guide_vivo_2_title">Find ST Delivery</string>
     <string name="guide_vivo_2_body">It’s in the list of apps</string>
     <string name="guide_vivo_3_title">Turn on Autostart</string>
     <string name="guide_vivo_3_body">The switch turns blue. Then come back here.</string>
@@ -373,8 +373,8 @@
     <string name="guide_samsung_1_body">In Settings, tap Battery, then Background usage limits</string>
     <string name="guide_samsung_2_title">Never sleeping apps</string>
     <string name="guide_samsung_2_body">Tap Never sleeping apps, then the plus button</string>
-    <string name="guide_samsung_3_title">Add ST Partner</string>
-    <string name="guide_samsung_3_body">Tick ST Partner and tap Add. Then come back here.</string>
+    <string name="guide_samsung_3_title">Add ST Delivery</string>
+    <string name="guide_samsung_3_body">Tick ST Delivery and tap Add. Then come back here.</string>
 
     <!-- Home (canvas Home offline / online) -->
     <string name="home_partner_trader">Shop partner</string>
@@ -552,7 +552,7 @@
     <string name="pickup_need_photo">Take a photo of the damage first</string>
     <string name="pickup_keep_deposit">Keep deposit · send to admin</string>
     <string name="ring_gone">This order has gone to someone else.</string>
-    <string name="ring_load_failed">Couldn’t load this order. Check your internet, then open ST Partner.</string>
+    <string name="ring_load_failed">Couldn’t load this order. Check your internet, then open ST Delivery.</string>
     <!-- Orders: shop and rider delivery screens -->
     <string name="order_title">Order #%s</string>
     <string name="order_rider_delivers">Rider delivers</string>

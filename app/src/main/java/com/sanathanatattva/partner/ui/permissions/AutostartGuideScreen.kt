@@ -133,7 +133,7 @@ private fun StepArt(step: Int, t: Float, reduce: Boolean, modifier: Modifier) {
                 0 -> { // Settings grid with "Apps"
                     for (r in 0..1) for (c in 0..2) box(10f + c * 24f, 10f + r * 24f, 16f, 16f, 4f, fill = if (r == 1 && c == 1) St.Green else St.SteelDark)
                 }
-                1 -> { // App list, ST Partner highlighted
+                1 -> { // App list, ST Delivery highlighted
                     for (r in 0..2) {
                         box(8f, 8f + r * 17f, 68f, 13f, 4f, fill = if (r == 1) St.GreenTint else St.Paper, stroke = if (r == 1) St.Green else null, strokeWidth = 1.5f)
                         dot(16f, 14.5f + r * 17f, 4f, fill = if (r == 1) St.Gold else St.SteelDark)
