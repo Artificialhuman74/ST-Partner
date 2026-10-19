@@ -32,8 +32,9 @@ android {
     }
 
     defaultConfig {
-        // Permanent once on Play: confirm before the first upload (handoff §8 item 8).
-        applicationId = "com.sanathanatattva.partner"
+        // Permanent: the app is registered on Play under this ID ("ST Delivery", 2026-10-19).
+        // The Kotlin namespace stays com.sanathanatattva.partner; only the store ID differs.
+        applicationId = "com.sanathanatattva.delivery"
         // 26: notification channels and full-screen alerts are core to the app.
         minSdk = 26
         targetSdk = 36

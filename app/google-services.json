@@ -123,6 +123,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297106911662:android:9ffa1d9d9038801e47983f",
+        "android_client_info": {
+          "package_name": "com.sanathanatattva.delivery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOzW-mtKUlHSavwFEpp8s2_5MdkdRT-Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
