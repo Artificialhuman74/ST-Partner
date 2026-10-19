@@ -10,8 +10,8 @@ if (file("google-services.json").exists()) {
     apply(plugin = libs.plugins.google.services.get().pluginId)
 }
 
-// Release backend URL comes from gradle.properties / -P (handoff §8 item 1, still unknown).
-val prodBaseUrl = (findProperty("st.prodBaseUrl") as String?).orEmpty()
+// Release builds talk to the production backend on Railway; -Pst.prodBaseUrl=… overrides it.
+val prodBaseUrl = (findProperty("st.prodBaseUrl") as String?) ?: "https://sanathanatattava-production-67b1.up.railway.app/"
 // Debug builds use the testing server; -Pst.debugBaseUrl=http://localhost:5001/ points them at
 // a backend on this computer (with `adb reverse tcp:5001 tcp:5001`).
 val debugBaseUrl = (findProperty("st.debugBaseUrl") as String?) ?: "https://sanathanatattava-testing.up.railway.app/"
