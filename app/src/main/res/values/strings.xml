@@ -397,6 +397,7 @@
     <string name="home_auto_offline_title">We’ve set you offline</string>
     <string name="home_auto_offline_body">You missed 3 orders in a row, so we’ve set you offline. Go online again when you’re ready.</string>
     <string name="home_offline_failed">Couldn’t go online. Check your internet and try again.</string>
+    <string name="home_go_offline_failed">Couldn’t go offline. Check your internet and try again.</string>
     <string name="online_notification_title">You’re online</string>
     <string name="online_notification_body">Waiting for orders. Keep this here.</string>
     <string name="online_notification_stop">Go offline</string>

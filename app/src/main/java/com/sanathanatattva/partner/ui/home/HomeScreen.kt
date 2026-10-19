@@ -207,7 +207,7 @@ fun HomeScreen(
                     }
                 }
                 if (vm.failed) {
-                    Text(stringResource(R.string.home_offline_failed), color = St.Brick, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
+                    Text(stringResource(vm.failedMessage), color = St.Brick, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
                 }
                 Spacer(Modifier.height(12.dp))
                 when {
