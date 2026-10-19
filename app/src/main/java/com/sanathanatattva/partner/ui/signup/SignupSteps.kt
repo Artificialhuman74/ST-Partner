@@ -1,5 +1,6 @@
 package com.sanathanatattva.partner.ui.signup
 
+import androidx.compose.ui.text.style.TextOverflow
 import com.sanathanatattva.partner.ui.components.ShutterButton
 import com.sanathanatattva.partner.ui.components.CameraTrigger
 import androidx.compose.animation.core.CubicBezierEasing
@@ -701,7 +702,7 @@ private fun CareCard(draft: SignupDraft, relationLabel: Int?) {
         if (who != null) {
             val rise = rememberEntrance(who, 500)
             Box(Modifier.offset(x = u * 196f, y = u * 92f).width(u * 150f).riseIn(rise, 4.dp), contentAlignment = Alignment.TopCenter) {
-                Text(who, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold), color = St.Ink, maxLines = 1, softWrap = false)
+                Text(who, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold), color = St.Ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     }
@@ -754,7 +755,8 @@ fun ReviewStep(draft: SignupDraft, onEdit: (Step) -> Unit, onChange: Edit) {
         ReviewRow(StIcons.Pin, stringResource(R.string.signup_review_base), baseSummary(draft)) { onEdit(Step.Base) }
         ReviewRow(vehicleIcon(draft.vehicle), stringResource(R.string.signup_review_vehicle), vehicleName(draft.vehicle)) { onEdit(Step.Vehicle) }
         if (draft.motorised) {
-            ReviewRow(StIcons.IdCard, stringResource(R.string.signup_review_licence), stringResource(R.string.signup_review_licence_ok) + " · " + draft.licenceNumber.trim()) { onEdit(Step.Licence) }
+            val number = draft.licenceNumber.trim()
+            ReviewRow(StIcons.IdCard, stringResource(R.string.signup_review_licence), stringResource(R.string.signup_review_licence_ok) + if (number.isNotEmpty()) " · $number" else "") { onEdit(Step.Licence) }
         }
         val bankName = draft.bankLabel.substringBefore(" · ").ifBlank { draft.ifsc }
         ReviewRow(StIcons.Bank, stringResource(R.string.signup_review_bank), "$bankName ···· ${draft.accountNumber.takeLast(4)}") { onEdit(Step.Bank) }
@@ -797,7 +799,10 @@ private fun baseSummary(d: SignupDraft): String {
         BaseLabel.Shop -> stringResource(R.string.signup_base_shop)
         BaseLabel.Other -> stringResource(R.string.signup_base_other)
     }
-    return label + " · " + d.baseAddress.substringBefore(',').ifBlank { d.baseAddress }
+    // The area reads better than the house number: "12, 3rd Cross, Jayanagar 4th Block, Bengaluru" → "Jayanagar 4th Block".
+    val parts = d.baseAddress.split(',').map { it.trim() }.filter { it.isNotEmpty() && !it.matches(Regex("\\d{6}")) && !it.contains("Bengaluru", true) && !it.contains("Bangalore", true) && !it.contains("Karnataka", true) && !it.equals("India", true) }
+    val area = parts.lastOrNull { it.any(Char::isLetter) && !it.first().isDigit() } ?: parts.firstOrNull() ?: d.baseAddress
+    return "$label · $area"
 }
 
 @Composable

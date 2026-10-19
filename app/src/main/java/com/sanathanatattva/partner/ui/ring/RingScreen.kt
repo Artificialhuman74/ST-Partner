@@ -157,7 +157,7 @@ fun RingScreen(offer: Offer, totalMs: Long, onHearAgain: () -> Unit, onAccept: (
                 onClick = { haptics.performHapticFeedback(HapticFeedbackType.Reject); onDecline() },
                 border = BorderStroke(2.dp, St.Green),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = St.Green),
-                modifier = Modifier.fillMaxWidth().height(56.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                 shape = RoundedCornerShape(28.dp),
             ) {
                 Text(

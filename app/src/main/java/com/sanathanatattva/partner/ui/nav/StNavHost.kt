@@ -1,5 +1,6 @@
 package com.sanathanatattva.partner.ui.nav
 
+import androidx.lifecycle.Lifecycle
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -82,7 +83,10 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
         val dest = entry?.destination ?: return@LaunchedEffect
         if (dest.hasRoute<SplashRoute>() || dest.hasRoute<LoginRoute>() || dest.hasRoute<LanguageRoute>() || dest.hasRoute<IntroRoute>()) return@LaunchedEffect
         OpenOrder.consumed()
-        nav.navigate(OrderRoute(id)) { launchSingleTop = true }
+        // Already looking at this order: stay. Another order's screen: open this one over it
+        // (single-top would reuse that screen, still showing the other order).
+        val showing = dest.hasRoute<OrderRoute>() && entry?.toRoute<OrderRoute>()?.orderId == id
+        if (!showing) nav.navigate(OrderRoute(id))
     }
     val dock = remember { DockState() }
     CompositionLocalProvider(LocalDockState provides dock) {
@@ -111,13 +115,13 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
                 onLoggedIn = { user ->
                     nav.replaceAll(if (user.isPendingReview) UnderReviewRoute else LoggedInRoute(user.firstName))
                 },
-                onJoin = { viaGoogle -> nav.navigate(SignupRoute(viaGoogle)) },
+                onJoin = { viaGoogle -> nav.go(SignupRoute(viaGoogle)) },
             )
         }
         composable<SignupRoute> { entry ->
             SignupScreen(
                 viaGoogle = entry.toRoute<SignupRoute>().viaGoogle,
-                onLeave = { if (!nav.popBackStack()) nav.replaceAll(LoginRoute) },
+                onLeave = { if (!nav.back()) nav.replaceAll(LoginRoute) },
                 onSubmitted = { nav.replaceAll(UnderReviewRoute) },
             )
         }
@@ -144,18 +148,18 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
         composable<HomeRoute>(enterTransition = { fadeIn(tween(500)) }, popEnterTransition = { fadeIn(tween(220)) }) {
             HomeScreen(
                 onSignedOut = { nav.replaceAll(LoginRoute) },
-                onPermissions = { nav.navigate(PermGateRoute()) },
+                onPermissions = { nav.go(PermGateRoute()) },
                 onTab = { nav.toTab(it) },
-                onOpenOrder = { nav.navigate(OrderRoute(it)) },
+                onOpenOrder = { nav.go(OrderRoute(it)) },
             )
         }
         composable<PermGateRoute> { entry ->
             val fromApproval = entry.toRoute<PermGateRoute>().fromApproval
             PermGateScreen(
-                onBack = { if (fromApproval) nav.replaceAll(HomeRoute) else nav.popBackStack() },
+                onBack = { if (fromApproval) nav.replaceAll(HomeRoute) else nav.back() },
                 onReady = { alreadyOnline ->
                     when {
-                        alreadyOnline && !fromApproval -> nav.popBackStack()
+                        alreadyOnline && !fromApproval -> nav.back()
                         else -> {
                             // "Go online" lands on Home with the start-place picker already up.
                             if (!alreadyOnline) container.partner.wantsToGoOnline = true
@@ -163,44 +167,44 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
                         }
                     }
                 },
-                onAutostartGuide = { nav.navigate(AutostartGuideRoute) },
+                onAutostartGuide = { nav.go(AutostartGuideRoute) },
             )
         }
         composable<AutostartGuideRoute> {
-            AutostartGuideScreen(onBack = { nav.popBackStack() }, onDone = { nav.popBackStack() })
+            AutostartGuideScreen(onBack = { nav.back() }, onDone = { nav.back() })
         }
         composable<ProfileRoute>(enterTransition = { fadeIn(tween(220)) }, exitTransition = { fadeOut(tween(160)) }, popEnterTransition = { fadeIn(tween(220)) }, popExitTransition = { fadeOut(tween(160)) }) {
             ProfileScreen(
                 onOpen = { link ->
                     when (link) {
-                        ProfileLink.StartPlaces -> nav.navigate(StartPlacesRoute)
-                        ProfileLink.Alerts -> nav.navigate(PermGateRoute())
-                        ProfileLink.Language -> nav.navigate(ChangeLanguageRoute)
-                        ProfileLink.DeliveryHours -> nav.navigate(DeliveryHoursRoute)
-                        ProfileLink.Payout -> nav.navigate(PayoutRoute)
-                        ProfileLink.RiderJobs -> nav.navigate(RiderJobsRoute)
-                        ProfileLink.ContainerPickups -> nav.navigate(ContainerPickupsRoute)
+                        ProfileLink.StartPlaces -> nav.go(StartPlacesRoute)
+                        ProfileLink.Alerts -> nav.go(PermGateRoute())
+                        ProfileLink.Language -> nav.go(ChangeLanguageRoute)
+                        ProfileLink.DeliveryHours -> nav.go(DeliveryHoursRoute)
+                        ProfileLink.Payout -> nav.go(PayoutRoute)
+                        ProfileLink.RiderJobs -> nav.go(RiderJobsRoute)
+                        ProfileLink.ContainerPickups -> nav.go(ContainerPickupsRoute)
                         // Vehicle changes need the team (licence/plate are re-checked), so they share Edit profile's note.
-                        ProfileLink.Edit, ProfileLink.Vehicle -> nav.navigate(EditProfileRoute)
+                        ProfileLink.Edit, ProfileLink.Vehicle -> nav.go(EditProfileRoute)
                     }
                 },
                 onLoggedOut = { nav.replaceAll(LoginRoute) },
             )
         }
         composable<EarningsRoute>(enterTransition = { fadeIn(tween(220)) }, exitTransition = { fadeOut(tween(160)) }, popEnterTransition = { fadeIn(tween(220)) }, popExitTransition = { fadeOut(tween(160)) }) {
-            EarningsScreen(onPayout = { nav.navigate(PayoutRoute) })
+            EarningsScreen(onPayout = { nav.go(PayoutRoute) })
         }
         composable<StartPlacesRoute> {
-            StartPlacesScreen(onBack = { nav.popBackStack() })
+            StartPlacesScreen(onBack = { nav.back() })
         }
         composable<ChangeLanguageRoute> {
-            LanguageScreen(onDone = { nav.popBackStack() })
+            LanguageScreen(onDone = { nav.back() })
         }
-        composable<DeliveryHoursRoute> { DeliveryHoursScreen(onBack = { nav.popBackStack() }) }
-        composable<PayoutRoute> { PayoutScreen(onBack = { nav.popBackStack() }) }
-        composable<RiderJobsRoute> { RiderJobsScreen(onBack = { nav.popBackStack() }) }
-        composable<ContainerPickupsRoute> { ContainerPickupsScreen(onBack = { nav.popBackStack() }) }
-        composable<EditProfileRoute> { EditProfileScreen(onBack = { nav.popBackStack() }) }
+        composable<DeliveryHoursRoute> { DeliveryHoursScreen(onBack = { nav.back() }) }
+        composable<PayoutRoute> { PayoutScreen(onBack = { nav.back() }) }
+        composable<RiderJobsRoute> { RiderJobsScreen(onBack = { nav.back() }) }
+        composable<ContainerPickupsRoute> { ContainerPickupsScreen(onBack = { nav.back() }) }
+        composable<EditProfileRoute> { EditProfileScreen(onBack = { nav.back() }) }
         composable<OrderRoute> { OrderScreen(onBack = { nav.toTab(HomeTab.Home) }) }
     }
     AnimatedVisibility(
@@ -246,3 +250,18 @@ private fun NavHostController.replaceAll(route: Any) {
         launchSingleTop = true
     }
 }
+
+/**
+ * Taps that land while a screen is still sliding in or out are ignored, so a quick double tap
+ * never opens two copies of a screen or goes back two screens at once.
+ */
+private val NavHostController.settled: Boolean
+    get() = currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED
+
+private fun NavHostController.go(route: Any) {
+    if (!settled) return
+    navigate(route) { launchSingleTop = true }
+}
+
+/** Back from a screen's own arrow. True when handled (or ignored mid-transition). */
+private fun NavHostController.back(): Boolean = if (!settled) true else popBackStack()

@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +63,12 @@ private val TrackOff = Color(0xFFC9C2B3)
 @Composable
 fun AutostartGuideScreen(onBack: () -> Unit, onDone: () -> Unit) {
     val context = LocalContext.current
-    val guide = remember { Autostart.guideFor() } ?: run { onDone(); return }
+    val guide = remember { Autostart.guideFor() }
+    if (guide == null) {
+        // No steps for this phone: move on, but from an effect, never mid-composition.
+        LaunchedEffect(Unit) { onDone() }
+        return
+    }
     val reduce = LocalReduceMotion.current
     val t by rememberLoop(6600, still = 0.85f)
 

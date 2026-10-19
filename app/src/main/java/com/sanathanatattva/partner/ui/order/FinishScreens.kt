@@ -1,5 +1,7 @@
 package com.sanathanatattva.partner.ui.order
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.wrapContentHeight
 import com.sanathanatattva.partner.ui.components.ShutterButton
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -17,6 +19,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -60,6 +64,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.pluralStringResource
@@ -365,38 +370,17 @@ fun DeliveredScreen(customer: String, earned: Double, trader: Boolean, todayDeli
     val wave by rememberLoop(2400)
 
     Box(Modifier.fillMaxSize().background(St.Cream)) {
-        // "dv-flood" + "dv-wave" + "dv-splash"
-        val flood = seg(t, 0f, 0.28f, FloodEase)
-        Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(306.dp).graphicsLayer { translationY = size.height * (1f - flood) }) {
-            Box(Modifier.fillMaxSize().background(St.Gold))
-            Canvas(Modifier.fillMaxWidth().height(22.dp).offset(y = (-20).dp)) {
-                val w = 48.75.dp.toPx()
-                val shift = if (reduce) 0f else -size.width * wave
-                val path = Path().apply {
-                    moveTo(shift, 12.dp.toPx())
-                    var x = shift
-                    while (x < size.width * 2) {
-                        quadraticTo(x + w / 2, if (((x - shift) / w).toInt() % 2 == 0) 2.dp.toPx() else 22.dp.toPx(), x + w, 12.dp.toPx())
-                        x += w
-                    }
-                    lineTo(x, size.height); lineTo(shift, size.height); close()
-                }
-                drawPath(path, St.Gold)
-            }
-            listOf(70f to 0f, 150f to 0.12f, 236f to 0.22f, 318f to 0.12f).forEachIndexed { i, (left, delayFrac) ->
-                val d = delayFrac / 6.4f
-                val p = t - d
-                val a = kf(p, 0.24f to 0f, 0.27f to 1f, 0.42f to 0f)
-                val y = kf(p, 0.24f to 0f, 0.33f to -54f, 0.42f to 4f, easing = SplashEase)
-                Box(
-                    Modifier.offset(x = left.dp, y = (-9).dp).size(width = if (i % 2 == 0) 9.dp else 7.dp, height = if (i % 2 == 0) 12.dp else 10.dp)
-                        .graphicsLayer { alpha = a; translationY = y.dp.toPx() }.clip(DropShape).background(St.Gold),
-                )
-            }
-        }
-
+        // One column, the totals and button at the bottom: on a short phone (or large text) it
+        // scrolls instead of the earnings card sliding under the totals. The gold flood is the
+        // bottom section's background, so it can never rise over the words above it.
+        BoxWithConstraints(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal))) {
+        val short = maxHeight < 700.dp
         Column(
-            Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing).padding(top = 80.dp),
+            Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight).fillMaxWidth(),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+        Column(
+            Modifier.fillMaxWidth().padding(top = if (short) 28.dp else 80.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(Modifier.size(150.dp), contentAlignment = Alignment.Center) {
@@ -450,6 +434,7 @@ fun DeliveredScreen(customer: String, earned: Double, trader: Boolean, todayDeli
                 stringResource(R.string.delivered_body, customer),
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 19.sp),
                 color = St.Ink3,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 10.dp, start = 24.dp, end = 24.dp).graphicsLayer { alpha = text2; translationY = 12.dp.toPx() * (1f - text2) },
             )
             val earn = seg(t, 0.40f, 0.50f)
@@ -465,8 +450,40 @@ fun DeliveredScreen(customer: String, earned: Double, trader: Boolean, todayDeli
             }
         }
 
+        Box(Modifier.padding(top = 44.dp).fillMaxWidth().heightIn(min = 306.dp), contentAlignment = Alignment.BottomCenter) {
+            // "dv-flood" + "dv-wave" + "dv-splash"
+            val flood = seg(t, 0f, 0.28f, FloodEase)
+            Box(Modifier.matchParentSize().graphicsLayer { translationY = size.height * (1f - flood) }) {
+                Box(Modifier.fillMaxSize().background(St.Gold))
+                Canvas(Modifier.fillMaxWidth().height(22.dp).offset(y = (-20).dp)) {
+                    val w = 48.75.dp.toPx()
+                    val shift = if (reduce) 0f else -size.width * wave
+                    val path = Path().apply {
+                        moveTo(shift, 12.dp.toPx())
+                        var x = shift
+                        while (x < size.width * 2) {
+                            quadraticTo(x + w / 2, if (((x - shift) / w).toInt() % 2 == 0) 2.dp.toPx() else 22.dp.toPx(), x + w, 12.dp.toPx())
+                            x += w
+                        }
+                        lineTo(x, size.height); lineTo(shift, size.height); close()
+                    }
+                    drawPath(path, St.Gold)
+                }
+                listOf(70f to 0f, 150f to 0.12f, 236f to 0.22f, 318f to 0.12f).forEachIndexed { i, (left, delayFrac) ->
+                    val d = delayFrac / 6.4f
+                    val p = t - d
+                    val a = kf(p, 0.24f to 0f, 0.27f to 1f, 0.42f to 0f)
+                    val y = kf(p, 0.24f to 0f, 0.33f to -54f, 0.42f to 4f, easing = SplashEase)
+                    Box(
+                        Modifier.offset(x = left.dp, y = (-9).dp).size(width = if (i % 2 == 0) 9.dp else 7.dp, height = if (i % 2 == 0) 12.dp else 10.dp)
+                            .graphicsLayer { alpha = a; translationY = y.dp.toPx() }.clip(DropShape).background(St.Gold),
+                    )
+                }
+            }
+
         Column(
-            Modifier.align(Alignment.BottomCenter).fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing).padding(start = 20.dp, end = 20.dp, bottom = 24.dp),
+            Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+                .padding(start = 20.dp, end = 20.dp, top = 40.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             val today = seg(t, 0.50f, 0.60f)
@@ -485,6 +502,9 @@ fun DeliveredScreen(customer: String, earned: Double, trader: Boolean, todayDeli
             }
             OrderAction(stringResource(R.string.order_back_to_orders), onClick = onDone, trailing = StIcons.ArrowRight)
         }
+        }
+        }
+        }
     }
 }
 
@@ -501,7 +521,8 @@ private fun Odometer(amount: Double, p: Float) {
         whole.forEach { ch ->
             val d = ch.digitToInt()
             Box(Modifier.height(72.dp).clip(RoundedCornerShape(0.dp))) {
-                Column(Modifier.graphicsLayer { translationY = -72.dp.toPx() * d * p }) {
+                // Unbounded: the strip of ten digits is taller than the 72 dp window it rolls behind.
+                Column(Modifier.wrapContentHeight(align = Alignment.Top, unbounded = true).graphicsLayer { translationY = -72.dp.toPx() * d * p }) {
                     for (n in 0..9) Text(n.toString(), style = style, color = St.Green, modifier = Modifier.height(72.dp))
                 }
             }

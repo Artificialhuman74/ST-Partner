@@ -117,9 +117,10 @@ fun DeliveryHoursScreen(onBack: () -> Unit) {
     // Every change saves after a short pause, so tapping + a few times sends one request.
     LaunchedEffect(edits) {
         if (edits == 0) return@LaunchedEffect
+        val ready = days ?: return@LaunchedEffect
         save = SaveState.Saving
         delay(700)
-        val current = days ?: return@LaunchedEffect
+        val current = days ?: ready
         when (val r = repo.saveHours(current)) {
             is ApiResult.Success -> { save = SaveState.Saved; error = null; haptics.performHapticFeedback(HapticFeedbackType.SegmentTick) }
             is ApiResult.Failure -> { save = SaveState.Failed; error = r.problem.toUiText() }

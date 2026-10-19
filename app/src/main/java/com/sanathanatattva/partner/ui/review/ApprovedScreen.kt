@@ -1,5 +1,10 @@
 package com.sanathanatattva.partner.ui.review
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -110,11 +115,21 @@ fun ApprovedScreen(firstName: String, onContinue: () -> Unit) {
                 }
             }
         }
+        val words = Modifier.graphicsLayer {
+            val a = OilEase.transform(((intro.value * 1600f - 200f) / 1000f).coerceIn(0f, 1f))
+            alpha = a
+            translationY = 16.dp.toPx() * (1f - a)
+        }
+        // Button at the bottom when there's room (canvas: margin-top auto); scrolls on short phones.
+        BoxWithConstraints(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
+        val artHeight = if (maxHeight < 700.dp) 280.dp else 380.dp
         Column(
-            Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing).padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+            Modifier.verticalScroll(rememberScrollState()).heightIn(min = maxHeight).padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Canvas(Modifier.fillMaxWidth().weight(1f, fill = false).height(380.dp).semantics { contentDescription = description }) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Canvas(Modifier.fillMaxWidth().height(artHeight).semantics { contentDescription = description }) {
                 viewBox(350f, 380f) {
                     val t = intro.value * 1600f
                     rotate(360f * spin, Offset(175f, 200f)) {
@@ -149,11 +164,6 @@ fun ApprovedScreen(firstName: String, onContinue: () -> Unit) {
                     }
                 }
             }
-            val words = Modifier.graphicsLayer {
-                val a = OilEase.transform(((intro.value * 1600f - 200f) / 1000f).coerceIn(0f, 1f))
-                alpha = a
-                translationY = 16.dp.toPx() * (1f - a)
-            }
             Text(
                 stringResource(R.string.approved_title),
                 style = MaterialTheme.typography.headlineLarge.copy(fontSize = 42.sp),
@@ -168,8 +178,9 @@ fun ApprovedScreen(firstName: String, onContinue: () -> Unit) {
                 color = St.Ink2,
                 modifier = words.padding(top = 14.dp),
             )
-            Box(Modifier.weight(1f, fill = false))
+        }
             PrimaryButton(text = stringResource(R.string.approved_cta), onClick = onContinue, modifier = words.padding(top = 24.dp))
+        }
         }
     }
 }
