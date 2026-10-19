@@ -1,7 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+}
+
+// Play upload key (keystore.properties at the project root, never committed). Without it the
+// release build is unsigned, which is fine for everything except uploading to Play.
+val uploadKey = rootProject.file("keystore.properties").takeIf { it.exists() }?.let { f ->
+    Properties().apply { f.inputStream().use { load(it) } }
 }
 
 // Firebase config (Google sign-in now, order alerts later). The build still works without it;
@@ -40,12 +48,24 @@ android {
         generateLocaleConfig = true
     }
 
+    signingConfigs {
+        if (uploadKey != null) {
+            create("upload") {
+                storeFile = file(uploadKey.getProperty("storeFile"))
+                storePassword = uploadKey.getProperty("storePassword")
+                keyAlias = uploadKey.getProperty("keyAlias")
+                keyPassword = uploadKey.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"$debugBaseUrl\"")
         }
         release {
             buildConfigField("String", "BASE_URL", "\"$prodBaseUrl\"")
+            if (uploadKey != null) signingConfig = signingConfigs.getByName("upload")
             optimization {
                 enable = false
             }

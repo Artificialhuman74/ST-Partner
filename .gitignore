@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Play upload key passwords (see ~/.android/st-partner/)
+keystore.properties
+*.jks
+*.keystore
