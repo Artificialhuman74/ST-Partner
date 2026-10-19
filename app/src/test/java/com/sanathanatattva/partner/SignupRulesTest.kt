@@ -27,6 +27,11 @@ class SignupRulesTest {
         assertEquals("9876543210", mobileDigits("+91 98765 43210"))
         assertEquals("9876543210", mobileDigits("098765 43210"))
         assertEquals("98765", mobileDigits("98765"))
+        assertEquals("9876543210", mobileDigits("919876543210"))
+        assertEquals("9876543210", mobileDigits("+91-98765-43210"))
+        // A digit typed onto a full number is dropped, never shifts the number.
+        assertEquals("9123456789", mobileDigits("91234567890"))
+        assertEquals("9876543210", mobileDigits("98765432101"))
         assertTrue(SignupRules.isMobile("9876543210"))
         assertFalse(SignupRules.isMobile("1234567890"))
     }

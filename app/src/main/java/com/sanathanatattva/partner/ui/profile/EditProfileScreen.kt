@@ -42,6 +42,7 @@ import com.sanathanatattva.partner.ui.components.StTextField
 import com.sanathanatattva.partner.ui.login.UiText
 import com.sanathanatattva.partner.ui.login.text
 import com.sanathanatattva.partner.ui.login.toUiText
+import com.sanathanatattva.partner.ui.signup.mobileDigits
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,7 +64,8 @@ fun EditProfileScreen(onBack: () -> Unit) {
     LaunchedEffect(Unit) {
         container.sessions.current()?.user?.let { u ->
             name = u.name
-            phone = u.phone.orEmpty().removePrefix("+91").trim()
+            // Stored numbers come in every shape ("+91 98765 43210", "919876543210", "0987…").
+            phone = mobileDigits(u.phone.orEmpty())
             email = u.email
         }
     }
@@ -81,13 +83,14 @@ fun EditProfileScreen(onBack: () -> Unit) {
             )
             StTextField(
                 value = phone,
-                onValueChange = { v -> phone = v.filter(Char::isDigit).take(10); fields = fields - "phone" },
+                // Same forgiving parse as signup, so a pasted or autofilled "+91 …" lands as the 10 digits.
+                onValueChange = { v -> phone = mobileDigits(v); fields = fields - "phone" },
                 label = stringResource(R.string.edit_phone),
                 icon = StIcons.Phone2,
                 prefix = "+91",
                 error = fields["phone"],
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
-                contentType = ContentType.PhoneNumber,
+                contentType = ContentType.PhoneNumberNational,
             )
             StTextField(value = email, onValueChange = {}, label = stringResource(R.string.edit_email), readOnly = true, helper = stringResource(R.string.edit_email_note))
             error?.let { Text(text(it), color = St.Brick, style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp)) }

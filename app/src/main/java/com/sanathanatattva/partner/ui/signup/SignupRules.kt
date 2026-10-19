@@ -72,8 +72,10 @@ object SignupRules {
 fun mobileDigits(raw: String): String {
     val d = raw.filter(Char::isDigit)
     return when {
-        d.length > 10 && d.startsWith("91") -> d.drop(2).take(10)
-        d.length > 10 && d.startsWith("0") -> d.drop(1).take(10)
+        // Only a whole number with its country code / trunk 0 is unwrapped; an extra digit
+        // typed onto a full number (even one starting 91…) is simply ignored.
+        d.length == 12 && d.startsWith("91") -> d.drop(2)
+        d.length == 11 && d.startsWith("0") -> d.drop(1)
         else -> d.take(10)
     }
 }
