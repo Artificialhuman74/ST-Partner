@@ -1,5 +1,6 @@
 package com.sanathanatattva.partner.ui.order
 
+import com.sanathanatattva.partner.ui.components.ShutterButton
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
@@ -192,26 +193,7 @@ fun DoorPhotoScreen(o: OrderCard, vm: OrderViewModel, otp: String, onBack: () ->
         chip = { GreenChip(stringResource(R.string.code_ok_chip), tick = true) },
         bottom = {
             if (photo == null) {
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val t by rememberLoop(2000)
-                    val shoot = stringResource(R.string.door_take)
-                    Box(
-                        Modifier.size(84.dp).drawBehind {
-                            if (!reduce) {
-                                val p = OilEase.transform((t / 0.7f).coerceAtMost(1f))
-                                drawCircle(St.Green.copy(alpha = 0.4f * (1f - p)), radius = size.minDimension / 2 + 14.dp.toPx() * p)
-                            }
-                        }.clip(CircleShape).background(St.Cream).border(4.dp, St.Green, CircleShape)
-                            .clickable(enabled = !trigger.busy, role = Role.Button) { haptics.performHapticFeedback(HapticFeedbackType.Confirm); trigger.shoot() }
-                            .semantics { contentDescription = shoot },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Box(Modifier.size(64.dp).clip(CircleShape).background(St.Green), contentAlignment = Alignment.Center) {
-                            Icon(StIcons.Camera, contentDescription = null, tint = St.Cream, modifier = Modifier.size(30.dp))
-                        }
-                    }
-                    Text(shoot, style = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp, fontWeight = FontWeight.Bold), color = St.Ink)
-                }
+                ShutterButton(trigger, stringResource(R.string.door_take))
             } else {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     OutlineAction(stringResource(R.string.door_retake), StIcons.Camera, Modifier.weight(1f).height(64.dp)) { photo = null }

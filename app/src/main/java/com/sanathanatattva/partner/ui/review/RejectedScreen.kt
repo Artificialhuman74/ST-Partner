@@ -1,5 +1,8 @@
 package com.sanathanatattva.partner.ui.review
 
+import androidx.compose.ui.unit.sp
+import com.sanathanatattva.partner.ui.components.riseIn
+import com.sanathanatattva.partner.ui.components.rememberEntrance
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -291,11 +294,13 @@ fun RejectedScreen(onResent: () -> Unit, onLoggedOut: () -> Unit) {
             Text(stringResource(R.string.rejected_progress, done, n), style = MaterialTheme.typography.labelMedium, color = St.Ink2, modifier = Modifier.padding(top = 6.dp))
             Spacer(Modifier.height(14.dp))
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                vm.issues.forEach { issue ->
+                vm.issues.forEachIndexed { index, issue ->
                     val look = lookOf(issue.item)
                     if (issue.item in vm.fixed) {
+                        // Canvas "rj-in": a fixed item settles in as a green row (.55 s, from 8 dp below).
+                        val settle = rememberEntrance(issue.item, 550)
                         Row(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(St.GreenWash).padding(start = 16.dp, end = 6.dp, top = 8.dp, bottom = 8.dp),
+                            Modifier.fillMaxWidth().riseIn(settle, 8.dp).clip(RoundedCornerShape(20.dp)).background(St.GreenWash).padding(start = 16.dp, end = 6.dp, top = 8.dp, bottom = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
@@ -312,16 +317,16 @@ fun RejectedScreen(onResent: () -> Unit, onLoggedOut: () -> Unit) {
                         }
                     } else {
                         Column(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(St.Paper).border(2.dp, IssueRose, RoundedCornerShape(24.dp)).padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(St.Paper).border(2.dp, IssueRose, RoundedCornerShape(22.dp)).padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Box(Modifier.size(44.dp).clip(CircleShape).background(St.Sand), contentAlignment = Alignment.Center) {
-                                    Icon(look.icon, contentDescription = null, tint = St.Brick, modifier = Modifier.size(24.dp))
+                            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                                IssueArt(issue.item, index, look.icon)
+                                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(stringResource(look.title), style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold), color = St.Ink)
+                                    Text(issue.reason, style = MaterialTheme.typography.bodyMedium, color = St.Ink3)
                                 }
-                                Text(stringResource(look.title), style = MaterialTheme.typography.titleLarge, color = St.Ink, modifier = Modifier.weight(1f))
                             }
-                            Text(issue.reason, style = MaterialTheme.typography.bodyMedium, color = St.Ink3)
                             OutlinedButton(
                                 onClick = { vm.startFix(issue.item) },
                                 border = BorderStroke(2.dp, St.Green),

@@ -1,5 +1,16 @@
 package com.sanathanatattva.partner.ui.signup
 
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import com.sanathanatattva.partner.ui.components.kf
+import com.sanathanatattva.partner.ui.components.rememberLoop
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.compose.BackHandler
@@ -148,7 +159,7 @@ fun SignupFrame(
 private fun StepBar(current: Int, total: Int, modifier: Modifier = Modifier) {
     val reduce = LocalReduceMotion.current
     val grow = remember(current) { Animatable(if (reduce) 1f else 0f) }
-    LaunchedEffect(current) { grow.animateTo(1f, tween(900, easing = OilEase)) }
+    LaunchedEffect(current) { grow.animateTo(1f, tween(1000, easing = OilEase)) } // canvas "su-now"
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
         repeat(total) { i ->
             val n = i + 1
@@ -222,6 +233,12 @@ fun rememberThumbnail(path: String?, maxSide: Int = 720): ImageBitmap? {
 }
 
 /** A document photo slot: empty (tap to shoot) or taken (thumbnail, clarity note, Retake). */
+/**
+ * A document photo slot (canvas "SignupLicence"). Empty: a dashed tile whose camera bobs
+ * ("dl-cam"). After a photo, the canvas's sequence plays once: the card swings in
+ * ("dl-card"), a gold line scans it ("dl-scan") while the bar fills ("dl-fill"), then
+ * "Clear" ("dl-ok"), a tick badge ("dl-badge") and a green edge ("dl-edge").
+ */
 @Composable
 fun PhotoTile(
     label: String,
@@ -231,78 +248,150 @@ fun PhotoTile(
 ) {
     val thumb = rememberThumbnail(path)
     val sharp by produceState<Double?>(null, path) { value = path?.let { sharpness(File(it)) } }
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(22.dp)
+    val reduce = LocalReduceMotion.current
     if (path == null) {
-        Column(
+        val bob by rememberLoop(1600)
+        Row(
             modifier
                 .fillMaxWidth()
-                .heightIn(min = 120.dp)
-                .clip(shape)
-                .background(St.Paper)
+                .heightIn(min = 150.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(St.Cream)
                 .drawBehind {
                     drawRoundRect(
-                        St.Line, cornerRadius = CornerRadius(20.dp.toPx()),
+                        TileDash, cornerRadius = CornerRadius(20.dp.toPx()),
                         style = Stroke(2.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 9f))),
                     )
                 }
                 .clickable(onClick = onTake)
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-        ) {
-            Icon(StIcons.Camera, contentDescription = null, tint = St.Green, modifier = Modifier.size(30.dp))
-            Text(label, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = St.Ink)
-            Text(stringResource(R.string.signup_tap_photo), style = MaterialTheme.typography.bodySmall, color = St.Ink2)
-        }
-    } else {
-        Row(
-            modifier
-                .fillMaxWidth()
-                .clip(shape)
-                .background(St.Paper)
-                .border(2.dp, St.LineSoft, shape)
-                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterHorizontally),
         ) {
-            Box(Modifier.size(width = 120.dp, height = 78.dp).clip(RoundedCornerShape(10.dp)).background(St.Sand)) {
-                if (thumb != null) Image(thumb, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            Box(
+                Modifier.size(56.dp)
+                    .graphicsLayer { translationY = if (reduce) 0f else -4.dp.toPx() * kf(bob, 0f to 0f, 0.5f to 1f, 1f to 0f, easing = EaseInOut) }
+                    .clip(RoundedCornerShape(18.dp)).background(St.Sand),
+                contentAlignment = Alignment.Center,
+            ) { Icon(StIcons.Camera, contentDescription = null, tint = St.Green, modifier = Modifier.size(28.dp)) }
+            Column {
+                Text(label, style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold), color = St.Ink)
+                Text(stringResource(R.string.signup_tap_photo), style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp), color = St.Ink2)
             }
-            // Label, clarity note and Retake share one column so none of them gets squeezed.
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(label, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = St.Ink, maxLines = 1)
-                val blurry = sharp != null && sharp!! < BLURRY_BELOW
-                if (sharp != null) {
-                    Row(
-                        Modifier.clip(RoundedCornerShape(10.dp)).background(if (blurry) St.Gold else St.GreenWash).padding(horizontal = 8.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        if (!blurry) Icon(StIcons.Check, contentDescription = null, tint = St.Green, modifier = Modifier.size(14.dp))
-                        Text(
-                            stringResource(if (blurry) R.string.signup_maybe_blurry else R.string.signup_clear),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (blurry) St.Ink else St.Green,
-                            maxLines = 1,
-                        )
+        }
+        return
+    }
+
+    // Plays for a photo taken now; a photo that was already there (draft, back from another step) shows at rest.
+    val firstPath = rememberSaveable { path }
+    val clock = remember(path) { Animatable(if (reduce || path == firstPath) SCAN_END else SCAN_START) }
+    LaunchedEffect(path) {
+        if (clock.value < SCAN_END) clock.animateTo(SCAN_END, tween((SCAN_END - SCAN_START).toInt(), easing = LinearEasing))
+    }
+    val blurry = sharp != null && sharp!! < BLURRY_BELOW
+    val t = clock.value
+    val done = sharp != null
+    // Canvas timeline (ms of its 6.4 s loop), from the moment the card swings in.
+    val card = kf(t, 1280f to 0f, 2176f to 1f, easing = OilEase)
+    val col = kf(t, 1536f to 0f, 2304f to 1f, easing = OilEase)
+    val scanY = kf(t, 2304f to 0f, 3968f to 1f, easing = ScanEase)
+    val scanA = kf(t, 2304f to 0f, 2432f to 1f, 3968f to 1f, 4096f to 0f)
+    val fill = kf(t, 2304f to 0f, 4352f to 1f, easing = FillEase)
+    val upA = if (done) kf(t, 4224f to 1f, 4480f to 0f) else 1f
+    val ok = if (done) kf(t, 4352f to 0f, 4736f to 1f, easing = OilEase) else 0f
+    val badge = if (done && !blurry) kf(t, 4352f to 0f, 4864f to 1f, easing = OilEase) else 0f
+    val edge = if (done) kf(t, 4352f to 0f, 4736f to 1f, easing = EaseOut) else 0f
+    val edgeColor = if (blurry) St.Gold else St.Green
+
+    Row(
+        modifier
+            .fillMaxWidth()
+            .heightIn(min = 150.dp)
+            .clip(shape)
+            .background(St.Paper)
+            .border(2.5.dp, TileEdge, shape)
+            .drawBehind {
+                if (edge > 0f) drawRoundRect(edgeColor, alpha = edge, cornerRadius = CornerRadius(22.dp.toPx()), style = Stroke(2.5.dp.toPx()))
+            }
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Box(
+            Modifier.size(width = 150.dp, height = 95.dp).graphicsLayer {
+                alpha = card
+                translationY = 34.dp.toPx() * (1f - card)
+                rotationZ = -7f * (1f - card)
+            },
+        ) {
+            Box(Modifier.fillMaxSize().shadow(8.dp, RoundedCornerShape(10.dp)).clip(RoundedCornerShape(10.dp)).background(St.Sand)) {
+                if (thumb != null) Image(thumb, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                if (scanA > 0f) {
+                    Box(
+                        Modifier.fillMaxWidth().height(4.dp)
+                            .graphicsLayer { translationY = 91.dp.toPx() * scanY; alpha = scanA }
+                            .shadow(10.dp, RoundedCornerShape(2.dp), ambientColor = St.Gold, spotColor = St.Gold)
+                            .background(St.Gold),
+                    )
+                }
+            }
+            if (badge > 0f) {
+                Box(
+                    Modifier.align(Alignment.TopEnd).graphicsLayer {
+                        translationX = 8.dp.toPx(); translationY = -8.dp.toPx()
+                        alpha = badge; scaleX = 0.3f + 0.7f * badge; scaleY = scaleX
+                    }.size(30.dp).clip(CircleShape).background(St.Paper).padding(3.dp).clip(CircleShape).background(St.Green),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(StIcons.Check, contentDescription = null, tint = St.Cream, modifier = Modifier.size(16.dp)) }
+            }
+        }
+        Column(
+            Modifier.weight(1f).graphicsLayer { alpha = col; translationX = 10.dp.toPx() * (1f - col) },
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(label, style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold), color = St.Ink, maxLines = 2)
+            Box(Modifier.fillMaxWidth().heightIn(min = 46.dp).semantics { liveRegion = LiveRegionMode.Polite }) {
+                if (upA > 0f) {
+                    Column(Modifier.graphicsLayer { alpha = upA }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(R.string.signup_checking), style = MaterialTheme.typography.bodyMedium.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold), color = St.GoldInk)
+                        Box(Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)).background(TileTrack)) {
+                            Box(Modifier.fillMaxSize().graphicsLayer { scaleX = fill; transformOrigin = TransformOrigin(0f, 0.5f) }.clip(RoundedCornerShape(4.dp)).background(St.Gold))
+                        }
                     }
                 }
-                Row(
-                    Modifier
-                        .heightIn(min = 44.dp)
-                        .clip(RoundedCornerShape(22.dp))
-                        .clickable(onClick = onTake)
-                        .padding(end = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Icon(StIcons.Retake, contentDescription = null, tint = St.Green, modifier = Modifier.size(18.dp))
-                    Text(stringResource(R.string.signup_retake), style = MaterialTheme.typography.labelMedium, color = St.Green)
+                if (ok > 0f) {
+                    Text(
+                        stringResource(if (blurry) R.string.signup_maybe_blurry else R.string.signup_clear),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
+                        color = if (blurry) St.GoldInk else St.Green,
+                        modifier = Modifier.graphicsLayer { alpha = ok; translationY = 6.dp.toPx() * (1f - ok) },
+                    )
                 }
+            }
+            Row(
+                Modifier
+                    .heightIn(min = 44.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .clickable(onClick = onTake)
+                    .padding(end = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Icon(StIcons.Retake, contentDescription = null, tint = St.Green, modifier = Modifier.size(18.dp))
+                Text(stringResource(R.string.signup_retake), style = MaterialTheme.typography.labelMedium, color = St.Green)
             }
         }
     }
 }
+
+private const val SCAN_START = 1280f
+private const val SCAN_END = 4864f
+private val ScanEase = CubicBezierEasing(0.45f, 0f, 0.55f, 1f)
+private val FillEase = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+private val TileDash = androidx.compose.ui.graphics.Color(0xFF8A7B63)
+private val TileEdge = androidx.compose.ui.graphics.Color(0xFFE0D3BB)
+private val TileTrack = androidx.compose.ui.graphics.Color(0xFFF1E4C8)
 
 /** Full-screen document camera shown over a step. */
 @Composable

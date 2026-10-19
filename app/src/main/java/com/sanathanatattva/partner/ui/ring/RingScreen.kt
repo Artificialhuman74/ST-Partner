@@ -139,8 +139,9 @@ fun RingScreen(offer: Offer, totalMs: Long, onHearAgain: () -> Unit, onAccept: (
         // "rg-card": rises 20px and fades in over 0.7s.
         val reduce = LocalReduceMotion.current
         val enter = remember { Animatable(if (reduce) 1f else 0f) }
-        LaunchedEffect(Unit) { enter.animateTo(1f, tween(1500, easing = LinearEasing)) }
-        val t = enter.value * 1500f
+        // Long enough for the last stamp (0.75 s + 0.9 s) to finish, not cut off part-way.
+        LaunchedEffect(Unit) { enter.animateTo(1f, tween(1650, easing = LinearEasing)) }
+        val t = enter.value * 1650f
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             Box(Modifier.graphicsLayer {
                 val p = seg(t, 0f, 700f)

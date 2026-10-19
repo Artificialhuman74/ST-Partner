@@ -59,4 +59,6 @@
     <string name="order_complete">ಆರ್ಡರ್ ಪೂರ್ಣಗೊಳಿಸಿ</string>
     <string name="home_going_online">ಆನ್‌ಲೈನ್ ಆಗುತ್ತಿದೆ…</string>
     <string name="home_going_offline">ಆಫ್‌ಲೈನ್ ಆಗುತ್ತಿದೆ…</string>
+    <string name="signup_you">ನೀವು</string>
+    <string name="signup_checking">ಪರಿಶೀಲಿಸುತ್ತಿದೆ…</string>
 </resources>

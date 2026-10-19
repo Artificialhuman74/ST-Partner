@@ -158,6 +158,7 @@
     <string name="signup_back_side">Back side</string>
     <string name="signup_tap_photo">Tap to take a photo</string>
     <string name="signup_clear">Clear</string>
+    <string name="signup_checking">Checking…</string>
     <string name="signup_maybe_blurry">Might be blurry</string>
     <string name="signup_licence_number">Licence number</string>
     <string name="signup_private_docs">Only the ST team can see your documents.</string>
@@ -181,6 +182,7 @@
     <string name="signup_pick_contact">Pick from contacts</string>
     <string name="signup_they_are">They are your</string>
     <string name="signup_emergency_phone">Their mobile number</string>
+    <string name="signup_you">You</string>
     <string name="signup_connected">You and %1$s, connected</string>
     <string name="relation_mother">Mother</string>
     <string name="relation_father">Father</string>
@@ -688,4 +690,14 @@
     <string name="home_coming_title">Your home screen is next</string>
     <string name="home_coming_body">Going online, order alerts and deliveries are the next part of the build.</string>
     <string name="home_log_out">Log out</string>
+    <!-- Google sign-up: what is still needed (canvas "MissingInfo") -->
+    <string name="missing_title">Almost there, %s</string>
+    <string name="missing_body">Add two things so orders can reach you.</string>
+    <string name="missing_progress">2 of 4 done</string>
+    <string name="missing_from_google">Name and email from Google</string>
+    <string name="missing_phone">Phone number</string>
+    <string name="missing_phone_body">Shops and customers call you on this</string>
+    <string name="missing_base">Base address</string>
+    <string name="missing_base_body">Where you start your deliveries</string>
+    <string name="missing_cta">Add phone number</string>
 </resources>

@@ -1,5 +1,12 @@
 package com.sanathanatattva.partner.ui.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.sp
+import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -194,16 +201,25 @@ fun CameraCapture(
     }
 }
 
-/** Dims everything outside the guide shape and outlines it. */
+/**
+ * Dims everything outside the guide shape and outlines it. The selfie oval is the canvas's
+ * ("SignupSelfie"): cream dashes marching round it ("sf-dash", 2.4 s) and a gold arc
+ * sweeping once round every 3.2 s ("sf-sweep").
+ */
 @Composable
 private fun GuideOverlay(guide: CameraGuide, modifier: Modifier) {
+    val reduce = LocalReduceMotion.current
+    val march by rememberLoop(2400)
+    val sweep by rememberLoop(3200)
     Canvas(modifier) {
+        val k = size.width / 350f
         val shape = Path()
         when (guide) {
             CameraGuide.Oval -> {
-                val w = size.width * 0.52f
-                val h = w * 1.32f
-                shape.addOval(Rect(Offset(center.x - w / 2, center.y - h / 2 - 12.dp.toPx()), Size(w, h)))
+                // rx 88, ry 116, centred 14 units above the middle of a 350 × 340 frame.
+                val w = 176f * k
+                val h = 232f * k
+                shape.addOval(Rect(Offset(center.x - w / 2, center.y - 14f * k - h / 2), Size(w, h)))
             }
             CameraGuide.Corners -> Unit
             CameraGuide.Card -> {
@@ -227,6 +243,47 @@ private fun GuideOverlay(guide: CameraGuide, modifier: Modifier) {
             return@Canvas
         }
         clipPath(shape, ClipOp.Difference) { drawRect(Color(0x800F2417)) }
-        drawPath(shape, St.Cream.copy(alpha = 0.9f), style = Stroke(3.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))))
+        if (guide == CameraGuide.Oval) {
+            val dashPhase = if (reduce) 0f else 38f * k * march
+            drawPath(shape, St.Cream, alpha = 0.85f, style = Stroke(3f * k, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f * k, 9f * k), dashPhase)))
+            if (!reduce) {
+                val perimeter = PathMeasure().apply { setPath(shape, false) }.length
+                val phase = perimeter * SweepEase.transform(sweep)
+                drawPath(shape, St.Gold, style = Stroke(5f * k, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(120f * k, perimeter - 120f * k), phase)))
+            }
+        } else {
+            drawPath(shape, St.Cream.copy(alpha = 0.9f), style = Stroke(3.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(14f, 10f))))
+        }
+    }
+}
+
+private val SweepEase = androidx.compose.animation.core.CubicBezierEasing(0.45f, 0f, 0.25f, 1f)
+
+/**
+ * The canvas shutter ("SignupSelfie", "DoorPhoto"): a green ring round a green disc, the ring
+ * breathing outwards every 2 s ("sf-ring" / "dp-ring"), with "Take photo" under it.
+ */
+@Composable
+fun ShutterButton(trigger: CameraTrigger, label: String, size: Dp = 84.dp, inner: Dp = 64.dp) {
+    val reduce = LocalReduceMotion.current
+    val t by rememberLoop(2000)
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(
+            Modifier.size(size).drawBehind {
+                if (!reduce) {
+                    val p = OilEase.transform((t / 0.7f).coerceAtMost(1f))
+                    drawCircle(St.Green.copy(alpha = 0.45f * (1f - p)), radius = this.size.minDimension / 2 + 14.dp.toPx() * p)
+                }
+            }.clip(CircleShape).background(St.Cream).border(4.dp, St.Green, CircleShape)
+                .clickable(enabled = !trigger.busy, role = Role.Button) { trigger.shoot() }
+                .semantics { contentDescription = label },
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(Modifier.size(inner).clip(CircleShape).background(St.Green), contentAlignment = Alignment.Center) {
+                if (trigger.busy) CircularProgressIndicator(color = St.Cream, strokeWidth = 3.dp, modifier = Modifier.size(26.dp))
+                else Icon(StIcons.Camera, contentDescription = null, tint = St.Cream, modifier = Modifier.size(inner * 0.45f))
+            }
+        }
+        Text(label, style = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp, fontWeight = FontWeight.Bold), color = St.Ink)
     }
 }

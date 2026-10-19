@@ -1,5 +1,17 @@
 package com.sanathanatattva.partner.ui.signup
 
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
+import com.sanathanatattva.partner.ui.components.OilEase
+import com.sanathanatattva.partner.ui.components.kf
+import com.sanathanatattva.partner.ui.components.rememberLoop
+import com.sanathanatattva.partner.ui.components.svgPath
+import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -145,13 +157,34 @@ fun BaseStep(draft: SignupDraft, errors: Map<String, String>, onChange: Edit) {
                 },
                 modifier = Modifier.fillMaxSize(),
             )
-            // The pin stays in the middle; the map moves under it. It lifts while dragging.
+            // The pin stays in the middle; the map moves under it. It lifts while dragging; at rest it
+            // hops every 3.2 s with its shadow shrinking and a halo spreading ("bp-pin", "bp-shadow", "bp-halo").
             val lift by animateDpAsState(if (moving) (-10).dp else 0.dp, label = "pin")
-            Icon(
-                StIcons.Pin, contentDescription = null, tint = St.Green,
-                modifier = Modifier.align(Alignment.Center).offset(y = (-20).dp + lift).size(44.dp),
-            )
-            Box(Modifier.align(Alignment.Center).size(8.dp).clip(CircleShape).background(St.Ink.copy(alpha = 0.35f)))
+            val reduce = LocalReduceMotion.current
+            val hop by rememberLoop(3200)
+            Canvas(Modifier.align(Alignment.Center).size(120.dp)) {
+                val tip = center
+                val still = reduce || moving
+                val up = if (still) 0f else kf(hop, 0f to 0f, 0.18f to 1f, 0.46f to 0f, 1f to 0f, easing = OilEase)
+                if (!still) {
+                    val halo = kf(hop, 0.40f to 0f, 1f to 1f, easing = EaseOut)
+                    val haloA = kf(hop, 0.40f to 0f, 0.50f to 0.5f, 1f to 0f, easing = EaseOut)
+                    if (haloA > 0f) drawCircle(St.Green, 30.dp.toPx() * (0.5f + 1.1f * halo), tip, alpha = haloA)
+                }
+                val shadowScale = 1f - 0.4f * up
+                drawOval(
+                    St.Ink, alpha = 0.35f - 0.17f * up,
+                    topLeft = Offset(tip.x - 10.dp.toPx() * shadowScale, tip.y + 1.dp.toPx() - 4.dp.toPx() * shadowScale),
+                    size = Size(20.dp.toPx() * shadowScale, 8.dp.toPx() * shadowScale),
+                )
+                translate(tip.x - 168.dp.toPx(), tip.y - 130.dp.toPx() - 16.dp.toPx() * up + lift.toPx()) {
+                    scale(density, density, pivot = Offset.Zero) {
+                        drawPath(BasePin, St.Green)
+                        drawPath(BasePin, St.GreenDeep, style = Stroke(2f))
+                        drawCircle(St.Cream, 7f, Offset(168f, 99f))
+                    }
+                }
+            }
             Row(
                 Modifier.align(Alignment.TopCenter).padding(top = 10.dp)
                     .clip(RoundedCornerShape(16.dp)).background(St.Paper.copy(alpha = 0.94f)).padding(horizontal = 12.dp, vertical = 6.dp),
@@ -326,3 +359,5 @@ suspend fun reverseGeocode(context: Context, lat: Double, lng: Double): String? 
         line?.removeSuffix(", India")?.removeSuffix(", Karnataka")
     }
 }
+
+private val BasePin = svgPath("M168 130s-18-17-18-31a18 18 0 0 1 36 0c0 14-18 31-18 31z")

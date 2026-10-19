@@ -45,6 +45,12 @@ fun SignupScreen(viaGoogle: Boolean, onLeave: () -> Unit, onSubmitted: (User) ->
     if (!vm.loaded) return
 
     var shooting by rememberSaveable { mutableStateOf<KycPhoto?>(null) }
+    // Signing up with Google: first say what Google already gave us and what is still needed.
+    var welcomed by rememberSaveable { mutableStateOf(!viaGoogle || vm.draft.phone.isNotBlank()) }
+    if (!welcomed) {
+        MissingInfoScreen(vm.draft.name, vm.draft.email, onContinue = { welcomed = true }, onBack = onLeave)
+        return
+    }
     BackHandler(enabled = shooting == null) { if (!vm.back()) onLeave() }
 
     Box(Modifier.fillMaxSize()) {

@@ -1,5 +1,40 @@
 package com.sanathanatattva.partner.ui.signup
 
+import com.sanathanatattva.partner.ui.components.ShutterButton
+import com.sanathanatattva.partner.ui.components.CameraTrigger
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import com.sanathanatattva.partner.ui.components.around
+import com.sanathanatattva.partner.ui.components.kf
+import com.sanathanatattva.partner.ui.components.rememberLoop
+import com.sanathanatattva.partner.ui.components.svgPath
+import com.sanathanatattva.partner.ui.components.viewBox
+import com.sanathanatattva.partner.ui.theme.Anek
+import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.animation.core.tween
+import com.sanathanatattva.partner.ui.components.OilEase
+import com.sanathanatattva.partner.ui.components.popIn
+import com.sanathanatattva.partner.ui.components.riseIn
+import com.sanathanatattva.partner.ui.components.rememberEntrance
 import android.app.Activity
 import android.content.Intent
 import android.provider.ContactsContract
@@ -194,8 +229,10 @@ private fun PasswordMeter(password: String) {
 fun SelfieStep(draft: SignupDraft, errors: Map<String, String>, newFile: () -> File, onTaken: (File) -> Unit) {
     val path = draft.photos[KycPhoto.Selfie]
     var retaking by remember { mutableStateOf(false) }
+    val trigger = remember { CameraTrigger() }
+    val capturing = path == null || retaking
     Column {
-        if (path == null || retaking) {
+        if (capturing) {
             CameraCapture(
                 front = true,
                 guide = CameraGuide.Oval,
@@ -205,11 +242,12 @@ fun SelfieStep(draft: SignupDraft, errors: Map<String, String>, newFile: () -> F
                     retaking = false
                     onTaken(it)
                 },
-                modifier = Modifier.fillMaxWidth().aspectRatio(350f / 360f),
+                modifier = Modifier.fillMaxWidth().aspectRatio(350f / 340f),
+                trigger = trigger,
             )
         } else {
             val thumb = rememberThumbnail(path, 1080)
-            Box(Modifier.fillMaxWidth().aspectRatio(350f / 360f).clip(RoundedCornerShape(28.dp)).background(St.Sand)) {
+            Box(Modifier.fillMaxWidth().aspectRatio(350f / 340f).clip(RoundedCornerShape(28.dp)).background(St.Sand)) {
                 if (thumb != null) Image(thumb, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                 OutlinedButton(
                     onClick = { retaking = true },
@@ -228,6 +266,10 @@ fun SelfieStep(draft: SignupDraft, errors: Map<String, String>, newFile: () -> F
             Tip(StIcons.Sun, stringResource(R.string.signup_tip_light), Modifier.weight(1f))
             Tip(StIcons.NoHelmet, stringResource(R.string.signup_tip_helmet), Modifier.weight(1f))
             Tip(StIcons.NoGlasses, stringResource(R.string.signup_tip_glasses), Modifier.weight(1f))
+        }
+        if (capturing) {
+            Spacer(Modifier.height(18.dp))
+            ShutterButton(trigger, stringResource(R.string.signup_take_photo), size = 80.dp, inner = 62.dp)
         }
     }
 }
@@ -272,7 +314,9 @@ fun VehicleStep(draft: SignupDraft, errors: Map<String, String>, onChange: Edit)
         }
         FieldError(errors["vehicle"])
         Spacer(Modifier.height(18.dp))
-        when {
+        // Canvas "vh-in": the plate field or the "no licence needed" note rises in (.6 s, 10 dp).
+        val enter = rememberEntrance(draft.motorised to (draft.vehicle != null), 600)
+        Box(Modifier.riseIn(enter, 10.dp)) { when {
             draft.motorised -> StTextField(
                 value = draft.plate,
                 onValueChange = { v -> onChange { it.copy(plate = v.uppercase().take(13)) } },
@@ -284,7 +328,7 @@ fun VehicleStep(draft: SignupDraft, errors: Map<String, String>, onChange: Edit)
                 leadingBadge = { PlateBadge() },
             )
             draft.vehicle != null -> InlineNote(stringResource(R.string.signup_no_licence), StIcons.Check)
-        }
+        } }
     }
 }
 
@@ -305,8 +349,9 @@ private val PlateBlue = Color(0xFF1F4FA0)
 private fun VehicleTile(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier) {
     val haptics = LocalHapticFeedback.current
     val shape = RoundedCornerShape(24.dp)
-    val border by animateColorAsState(if (selected) St.Green else St.LineSoft, label = "vb")
-    val fill by animateColorAsState(if (selected) St.GreenWash else St.Paper, label = "vf")
+    // Canvas "vh-tile": colours ease over .35 s.
+    val border by animateColorAsState(if (selected) St.Green else St.LineSoft, tween(350, easing = OilEase), label = "vb")
+    val fill by animateColorAsState(if (selected) St.GreenWash else St.Paper, tween(350, easing = OilEase), label = "vf")
     Box(
         modifier
             .heightIn(min = 128.dp)
@@ -321,7 +366,9 @@ private fun VehicleTile(icon: ImageVector, label: String, selected: Boolean, onC
             Text(label, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = if (selected) St.Green else St.Ink)
         }
         if (selected) {
-            Box(Modifier.align(Alignment.TopEnd).size(28.dp).clip(CircleShape).background(St.Green), contentAlignment = Alignment.Center) {
+            // Canvas "vh-pop": the tick badge pops in over .5 s.
+            val pop = rememberEntrance(Unit, 500)
+            Box(Modifier.align(Alignment.TopEnd).popIn(pop, 0.3f).size(28.dp).clip(CircleShape).background(St.Green), contentAlignment = Alignment.Center) {
                 Icon(StIcons.Check, contentDescription = null, tint = St.Cream, modifier = Modifier.size(16.dp))
             }
         }
@@ -419,24 +466,48 @@ private fun BankSection(draft: SignupDraft, errors: Map<String, String>, onChang
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
         )
         val matches = draft.accountNumber.length >= 9 && draft.accountNumber == draft.accountNumberAgain
-        StTextField(
-            value = draft.accountNumberAgain,
-            onValueChange = { v -> onChange { it.copy(accountNumberAgain = v.filter(Char::isDigit).take(18)) } },
-            label = stringResource(R.string.signup_account_again),
-            error = errors["account_again"],
-            helper = if (matches) stringResource(R.string.signup_account_match) else null,
-            valid = matches,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        )
-        StTextField(
-            value = draft.ifsc,
-            onValueChange = { v -> onChange { it.copy(ifsc = v.uppercase().filter(Char::isLetterOrDigit).take(11)) } },
-            label = stringResource(R.string.signup_ifsc),
-            error = errors["ifsc"],
-            helper = draft.bankLabel.ifBlank { null },
-            valid = SignupRules.isIfsc(draft.ifsc),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, autoCorrectEnabled = false),
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            StTextField(
+                value = draft.accountNumberAgain,
+                onValueChange = { v -> onChange { it.copy(accountNumberAgain = v.filter(Char::isDigit).take(18)) } },
+                label = stringResource(R.string.signup_account_again),
+                error = errors["account_again"],
+                valid = matches,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
+            if (matches) {
+                val match = rememberEntrance(Unit, 600, delayMs = 300)
+                Text(
+                    stringResource(R.string.signup_account_match),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
+                    color = St.Green,
+                    modifier = Modifier.riseIn(match, (-6).dp),
+                )
+            }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            StTextField(
+                value = draft.ifsc,
+                onValueChange = { v -> onChange { it.copy(ifsc = v.uppercase().filter(Char::isLetterOrDigit).take(11)) } },
+                label = stringResource(R.string.signup_ifsc),
+                error = errors["ifsc"],
+                valid = SignupRules.isIfsc(draft.ifsc),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, autoCorrectEnabled = false),
+            )
+            if (draft.bankLabel.isNotBlank()) {
+                val bank = rememberEntrance(draft.bankLabel, 700, delayMs = 500)
+                Row(
+                    Modifier.fillMaxWidth().popIn(bank, 0.96f).heightIn(min = 44.dp).clip(RoundedCornerShape(14.dp))
+                        .background(St.GreenWash).padding(horizontal = 14.dp)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Icon(StIcons.Check, contentDescription = null, tint = St.Green, modifier = Modifier.size(20.dp))
+                    Text(draft.bankLabel, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp, fontWeight = FontWeight.SemiBold), color = St.Green)
+                }
+            }
+        }
     }
 }
 
@@ -529,7 +600,11 @@ fun EmergencyStep(draft: SignupDraft, errors: Map<String, String>, onChange: Edi
     }
 }
 
-/** "You and Savitha · Mother, connected": two circles joined by a dashed line with a heart. */
+/**
+ * Canvas "We look out for you" card: you and your contact, joined by a gold arc that draws
+ * itself while an oil drop travels along it ("ec-arc", "ec-drop"), a ripple where it lands
+ * ("ec-rip"), then a heart ("ec-heart"). One 6 s loop; the name line rises in ("ec-who").
+ */
 @Composable
 private fun CareCard(draft: SignupDraft, relationLabel: Int?) {
     val first = draft.emergencyName.trim().substringBefore(' ')
@@ -539,31 +614,114 @@ private fun CareCard(draft: SignupDraft, relationLabel: Int?) {
         else -> "$first · ${stringResource(relationLabel)}"
     }
     val me = rememberThumbnail(draft.photos[KycPhoto.Selfie], 240)
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(St.Sand).padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    val reduce = LocalReduceMotion.current
+    val clock by rememberLoop(6000, still = 0.7f)
+    val text = rememberTextMeasurer()
+    val youLabel = stringResource(R.string.signup_you)
+    val initial = first.take(1).uppercase()
+    val ink = St.Ink
+    BoxWithConstraints(
+        Modifier.fillMaxWidth().aspectRatio(350f / 120f).clip(RoundedCornerShape(24.dp)).background(St.Sand)
+            .semantics(mergeDescendants = true) { contentDescription = who?.let { "$youLabel · $it" } ?: youLabel },
     ) {
-        Box(Modifier.size(54.dp).clip(CircleShape).background(St.GreenMist).border(2.5.dp, St.Green, CircleShape)) {
-            if (me != null) Image(me, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+        val u = maxWidth / 350f
+        Canvas(Modifier.fillMaxSize()) {
+            val t = clock
+            viewBox(350f, 120f) {
+                drawPath(CareArc, CareLine, style = Stroke(2.5f, cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 7f))))
+                // The arc draws 8% → 48%, holds, fades at the end.
+                val drawn = if (reduce) 1f else kf(t, 0.08f to 0f, 0.48f to 1f, easing = CareEase)
+                val arcAlpha = if (reduce) 1f else kf(t, 0.90f to 1f, 1f to 0f)
+                if (drawn > 0f) drawPath(partialPath(CareArc, drawn), St.Gold, alpha = arcAlpha, style = Stroke(3f, cap = StrokeCap.Round))
+
+                drawCircle(St.Cream, 31f, Offset(78f, 50f))
+                if (me == null) {
+                    clipPath(Path().apply { addOval(androidx.compose.ui.geometry.Rect(Offset(78f, 50f), 27f)) }) {
+                        drawRect(CareYouBg, Offset(50f, 22f), Size(56f, 56f))
+                        drawCircle(CareYouInk, 10f, Offset(78f, 44f))
+                        drawPath(CareYouBody, CareYouInk)
+                    }
+                }
+                drawCircle(St.Green, 29f, Offset(78f, 50f), style = Stroke(3f))
+
+                if (!reduce) {
+                    val rip = kf(t, 0.48f to 0f, 0.52f to 1f, 0.80f to 2f, easing = OilEase)
+                    if (rip > 0f && rip < 2f) {
+                        val a = if (rip <= 1f) 0.9f * rip else 0.9f * (2f - rip)
+                        val r = 31f * (if (rip <= 1f) 1f else 1f + 0.45f * (rip - 1f))
+                        drawCircle(St.Gold, r, Offset(272f, 50f), alpha = a, style = Stroke(3f))
+                    }
+                }
+                drawCircle(St.Cream, 31f, Offset(272f, 50f))
+                drawCircle(CareThemBg, 27f, Offset(272f, 50f))
+                drawCircle(St.Gold, 29f, Offset(272f, 50f), style = Stroke(3f))
+
+                // The drop travels the arc 8% → 50%, fading in and out at its ends.
+                if (!reduce) {
+                    val along = kf(t, 0.08f to 0f, 0.12f to 0.04f, 0.46f to 0.96f, 0.50f to 1f, easing = CareEase)
+                    val dropAlpha = kf(t, 0.08f to 0f, 0.12f to 1f, 0.46f to 1f, 0.50f to 0f)
+                    if (dropAlpha > 0f) {
+                        val pos = CareArcMeasure.getPosition(CareArcMeasure.length * along)
+                        translate(pos.x - 7f, pos.y - 9f) {
+                            drawPath(CareDrop, St.Gold, alpha = dropAlpha)
+                            drawOval(St.GoldGlint, Offset(4.6f - 1.3f, 11.5f - 2.4f), Size(2.6f, 4.8f), alpha = dropAlpha)
+                        }
+                    }
+                }
+                // The heart badge pops on the contact 50% → 60%, leaves at the end.
+                val heart = if (reduce) 1f else kf(t, 0.50f to 0f, 0.60f to 1f, easing = OilEase)
+                val heartOut = if (reduce) 1f else kf(t, 0.92f to 1f, 1f to 0f)
+                if (heart > 0f) {
+                    val sc = 0.3f + 0.7f * heart
+                    around(299f, 27f + 6f * (1f - heart), sx = sc) {
+                        drawCircle(St.Sand, 15f, Offset(299f, 27f + 6f * (1f - heart)), alpha = heart * heartOut)
+                        drawCircle(St.Green, 12f, Offset(299f, 27f + 6f * (1f - heart)), alpha = heart * heartOut)
+                        translate(299f - 7f, 27f + 6f * (1f - heart) - 7f) {
+                            scale(14f / 24f, 14f / 24f, pivot = Offset.Zero) { drawPath(CareHeart, St.Cream, alpha = heart * heartOut) }
+                        }
+                    }
+                }
+            }
+            // Text in screen pixels (a viewBox would scale the glyphs too): centred on the canvas x, baseline at its y.
+            val k = size.width / 350f
+            if (initial.isNotEmpty()) {
+                val m = text.measure(initial, TextStyle(fontFamily = Anek, fontWeight = FontWeight.ExtraBold, fontSize = 28.sp, color = CareInitial))
+                drawText(m, topLeft = Offset(272f * k - m.size.width / 2f, 60f * k - m.firstBaseline))
+            }
+            val y = text.measure(youLabel, TextStyle(fontFamily = Anek, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = ink))
+            drawText(y, topLeft = Offset(78f * k - y.size.width / 2f, 106f * k - y.firstBaseline))
         }
-        Box(Modifier.weight(1f).height(2.dp).background(St.Line))
-        Box(Modifier.size(34.dp).clip(CircleShape).background(St.Gold), contentAlignment = Alignment.Center) {
-            Icon(StIcons.Heart, contentDescription = null, tint = St.Cream, modifier = Modifier.size(18.dp))
+        if (me != null) {
+            // Your selfie inside the "you" ring (27 of 350 units).
+            Image(
+                me, contentDescription = null, contentScale = ContentScale.Crop,
+                modifier = Modifier.offset(x = u * (78f - 27f), y = u * (50f - 27f)).size(u * 54f).clip(CircleShape),
+            )
         }
-        Box(Modifier.weight(1f).height(2.dp).background(St.Line))
-        Box(Modifier.size(54.dp).clip(CircleShape).background(St.Paper).border(2.5.dp, if (who != null) St.Green else St.Line, CircleShape), contentAlignment = Alignment.Center) {
-            Text(first.take(1).uppercase(), style = MaterialTheme.typography.titleLarge, color = St.Green)
+        if (who != null) {
+            val rise = rememberEntrance(who, 500)
+            Box(Modifier.offset(x = u * 196f, y = u * 92f).width(u * 150f).riseIn(rise, 4.dp), contentAlignment = Alignment.TopCenter) {
+                Text(who, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold), color = St.Ink, maxLines = 1, softWrap = false)
+            }
         }
     }
-    if (who != null) {
-        Text(
-            stringResource(R.string.signup_connected, who),
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = St.Green,
-            modifier = Modifier.padding(top = 6.dp),
-        )
-    }
+}
+
+private val CareArc = svgPath("M112 50 Q175 2 238 50")
+private val CareArcMeasure = PathMeasure().apply { setPath(CareArc, false) }
+private val CareDrop = svgPath("M7 0.5C7 0.5 1 7.5 1 11.5a6 6 0 0 0 12 0C13 7.5 7 0.5 7 0.5z")
+private val CareHeart = svgPath("M12 21s-8.5-5.2-8.5-11.2A4.8 4.8 0 0 1 12 6.9a4.8 4.8 0 0 1 8.5 2.9C20.5 15.8 12 21 12 21z")
+private val CareYouBody = svgPath("M58 78c2-12 10-18 20-18s18 6 20 18z")
+private val CareEase = CubicBezierEasing(0.45f, 0f, 0.25f, 1f)
+private val CareLine = Color(0xFFD8C8AB)
+private val CareYouBg = Color(0xFFCFE0C9)
+private val CareYouInk = Color(0xFF5F7D5A)
+private val CareThemBg = Color(0xFFFBEFD2)
+private val CareInitial = Color(0xFF7A4F00)
+
+private fun partialPath(path: Path, fraction: Float): Path {
+    val measure = PathMeasure().apply { setPath(path, false) }
+    return Path().also { measure.getSegment(0f, measure.length * fraction, it, true) }
 }
 
 // ── 8 · Check and send ───────────────────────────────────────────────
@@ -622,7 +780,10 @@ fun ReviewStep(draft: SignupDraft, onEdit: (Step) -> Unit, onChange: Edit) {
                     .border(2.5.dp, if (draft.confirmed) St.Green else St.FieldBorder, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center,
             ) {
-                if (draft.confirmed) Icon(StIcons.Check, contentDescription = null, tint = St.Cream, modifier = Modifier.size(18.dp))
+                if (draft.confirmed) {
+                    val tick = rememberEntrance(Unit, 450)
+                    Icon(StIcons.Check, contentDescription = null, tint = St.Cream, modifier = Modifier.size(18.dp).popIn(tick, 0.4f))
+                }
             }
             Text(stringResource(R.string.signup_confirm), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = St.Ink)
         }

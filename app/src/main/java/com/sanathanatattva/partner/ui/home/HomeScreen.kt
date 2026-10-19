@@ -344,7 +344,7 @@ private fun OnlineCard(home: PartnerHome?, here: Pair<Double, Double>?, compact:
         )
         // Where orders come by: the live fix, else the place they started from.
         val center = here ?: home?.live?.let { it.lat to it.lng } ?: place?.let { it.latitude to it.longitude }
-        NearYouMap(center, Modifier.padding(top = if (compact) 8.dp else 12.dp).fillMaxWidth().height(if (compact) 110.dp else 150.dp))
+        NearYouMap(center, Modifier.padding(top = if (compact) 8.dp else 12.dp).fillMaxWidth().height(if (compact) 110.dp else 140.dp))
         Spacer(Modifier.height(8.dp))
         SlideButton(
             label = stringResource(if (busy) R.string.home_going_offline else R.string.home_go_offline),
