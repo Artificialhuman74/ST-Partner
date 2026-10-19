@@ -40,10 +40,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -83,22 +83,29 @@ import com.sanathanatattva.partner.ui.components.viewBox
 import com.sanathanatattva.partner.ui.theme.Anek
 import com.sanathanatattva.partner.ui.theme.AnekNarrow
 import com.sanathanatattva.partner.ui.theme.St
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 
 private enum class Lang(val tag: String) { Kannada("kn"), English("en") }
 
+/** How long the "saved" tick shows before the page fades away. */
+private const val SAVED_HOLD_MS = 650L
+
 /** First-run language picker (canvas "Language"). Choosing switches the whole app, voice included. */
 @Composable
 fun LanguageScreen(onDone: () -> Unit) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val haptics = LocalHapticFeedback.current
     var lang by rememberSaveable {
         val current = AppCompatDelegate.getApplicationLocales().get(0)?.language
         mutableStateOf(if (current == "en") Lang.English else Lang.Kannada)
     }
     val kn = lang == Lang.Kannada
+    var saved by remember { mutableStateOf(false) }
 
     BoxWithConstraints(
         Modifier
@@ -157,15 +164,27 @@ fun LanguageScreen(onDone: () -> Unit) {
         }
         PrimaryButton(
             text = stringResource(if (kn) R.string.language_cta_kn else R.string.language_cta_en),
+            done = saved,
             onClick = {
-                scope.launch {
-                    context.appContainer.settings.setLanguageChosen()
-                    onDone()
-                    // Recreates the activity in the new language; navigation state survives.
-                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(lang.tag))
-                }
+                // Optimistic: the app is in the new language at once (MainActivity handles the
+                // locale change in place, no restart), the button turns into a tick, and then the
+                // page fades away. The "chosen" flag is saved behind it, outside this screen's
+                // scope so leaving can't cancel it.
+                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                saved = true
+                val current = AppCompatDelegate.getApplicationLocales().get(0)?.language
+                if (current != lang.tag) AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(lang.tag))
+                val settings = context.appContainer.settings
+                CoroutineScope(Dispatchers.IO).launch { settings.setLanguageChosen() }
             },
         )
+        // Let the tick land before the page fades away.
+        LaunchedEffect(saved) {
+            if (saved) {
+                delay(SAVED_HOLD_MS)
+                onDone()
+            }
+        }
     }
     }
 }

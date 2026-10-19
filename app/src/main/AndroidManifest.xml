@@ -25,11 +25,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:enableOnBackInvokedCallback="true"
+        android:enableOnBackInvokedCallback="false"
         android:theme="@style/Theme.STPartner">
 
+        <!-- Predictive back is off: the phone's Back button made the page shrink into a card
+             before popping. Back now plays the same fade as the on-screen arrow.
+             configChanges: a language switch recomposes in place instead of restarting the screen. -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="locale|layoutDirection"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.STPartner.Starting"

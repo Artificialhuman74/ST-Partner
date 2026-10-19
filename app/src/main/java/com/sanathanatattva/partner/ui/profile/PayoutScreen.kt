@@ -61,8 +61,9 @@ import java.util.Locale
 fun PayoutScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val container = context.appContainer
-    var payout by remember { mutableStateOf<Payout?>(null) }
-    var bank by remember { mutableStateOf<String?>(null) }
+    // Opens drawn from the last answer (Profile fetches it ahead), then refreshes in place.
+    var payout by remember { mutableStateOf(container.partner.lastPayout) }
+    var bank by remember { mutableStateOf(container.partner.lastPayout?.ifsc?.let { container.banks.cached(it) }) }
     LaunchedEffect(Unit) {
         (container.partner.payout() as? ApiResult.Success)?.value?.let { p ->
             payout = p

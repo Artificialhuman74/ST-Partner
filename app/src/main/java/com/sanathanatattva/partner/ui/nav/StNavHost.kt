@@ -4,8 +4,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.animation.AnimatedVisibility
@@ -95,11 +93,12 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
         navController = nav,
         startDestination = SplashRoute,
         modifier = Modifier.fillMaxSize(),
-        // Calm, viscous moves: a short drift plus fade, never a bounce.
-        enterTransition = { fadeIn(tween(420, easing = OilEase)) + slideInHorizontally(tween(520, easing = OilEase)) { it / 12 } },
-        exitTransition = { fadeOut(tween(220)) },
-        popEnterTransition = { fadeIn(tween(420, easing = OilEase)) + slideInHorizontally(tween(520, easing = OilEase)) { -it / 12 } },
-        popExitTransition = { fadeOut(tween(220)) + slideOutHorizontally(tween(320)) { it / 12 } },
+        // One move for every page, forward and back (arrow or the phone's Back alike): the old
+        // page fades out, then the new one fades in, so the two never smear over each other.
+        enterTransition = { PageIn },
+        exitTransition = { PageOut },
+        popEnterTransition = { PageIn },
+        popExitTransition = { PageOut },
     ) {
         composable<SplashRoute>(enterTransition = { fadeIn(tween(1)) }) {
             SplashScreen(onDone = { route -> nav.replaceAll(route) })
@@ -145,7 +144,7 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
                 onLoggedOut = { nav.replaceAll(LoginRoute) },
             )
         }
-        composable<HomeRoute>(enterTransition = { fadeIn(tween(500)) }, popEnterTransition = { fadeIn(tween(220)) }) {
+        composable<HomeRoute>(enterTransition = { fadeIn(tween(500)) }) {
             HomeScreen(
                 onSignedOut = { nav.replaceAll(LoginRoute) },
                 onPermissions = { nav.go(PermGateRoute()) },
@@ -173,7 +172,7 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
         composable<AutostartGuideRoute> {
             AutostartGuideScreen(onBack = { nav.back() }, onDone = { nav.back() })
         }
-        composable<ProfileRoute>(enterTransition = { fadeIn(tween(220)) }, exitTransition = { fadeOut(tween(160)) }, popEnterTransition = { fadeIn(tween(220)) }, popExitTransition = { fadeOut(tween(160)) }) {
+        composable<ProfileRoute> {
             ProfileScreen(
                 onOpen = { link ->
                     when (link) {
@@ -191,7 +190,7 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
                 onLoggedOut = { nav.replaceAll(LoginRoute) },
             )
         }
-        composable<EarningsRoute>(enterTransition = { fadeIn(tween(220)) }, exitTransition = { fadeOut(tween(160)) }, popEnterTransition = { fadeIn(tween(220)) }, popExitTransition = { fadeOut(tween(160)) }) {
+        composable<EarningsRoute> {
             EarningsScreen(onPayout = { nav.go(PayoutRoute) })
         }
         composable<StartPlacesRoute> {
@@ -225,6 +224,9 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
     }
     }
 }
+
+private val PageOut = fadeOut(tween(140))
+private val PageIn = fadeIn(tween(260, delayMillis = 100, easing = OilEase))
 
 /** Bottom tabs swap in place over Home, so Back from any tab lands on Home. */
 private fun NavHostController.toTab(tab: HomeTab) {

@@ -8,6 +8,7 @@ import com.sanathanatattva.partner.data.api.LocationBody
 import com.sanathanatattva.partner.data.api.OnlineBody
 import com.sanathanatattva.partner.data.api.PartnerApi
 import com.sanathanatattva.partner.data.api.PartnerHome
+import com.sanathanatattva.partner.data.api.Payout
 import com.sanathanatattva.partner.data.api.Place
 import com.sanathanatattva.partner.data.api.PlaceBody
 import com.sanathanatattva.partner.data.api.ProfileBody
@@ -34,6 +35,8 @@ class PartnerRepository(private val api: PartnerApi) {
         private set
     @Volatile var lastEarnings: Earnings? = null
         private set
+    @Volatile var lastPayout: Payout? = null
+        private set
 
     /** Set by "Go online" on the alert checklist; Home opens the start-place picker and clears it. */
     @Volatile var wantsToGoOnline = false
@@ -42,6 +45,7 @@ class PartnerRepository(private val api: PartnerApi) {
         lastHome = null
         lastPlaces = null
         lastEarnings = null
+        lastPayout = null
     }
 
     suspend fun home(): ApiResult<PartnerHome> = apiCall { api.partnerHome() }.also { r ->
@@ -71,7 +75,7 @@ class PartnerRepository(private val api: PartnerApi) {
     suspend fun testAlert() = apiCall { api.testAlert() }
 
     suspend fun earnings(days: Int = 7) = apiCall { api.earnings(days) }.also { r -> if (r is ApiResult.Success) lastEarnings = r.value }
-    suspend fun payout() = apiCall { api.payout() }
+    suspend fun payout() = apiCall { api.payout() }.also { r -> if (r is ApiResult.Success) lastPayout = r.value }
     suspend fun hours() = apiCall { api.hours() }
     suspend fun saveHours(days: List<DayHours>) = apiCall { api.saveHours(HoursBody(days)) }
     suspend fun setRiderJobs(on: Boolean) = apiCall { api.setRiderJobs(RiderJobsBody(on)) }

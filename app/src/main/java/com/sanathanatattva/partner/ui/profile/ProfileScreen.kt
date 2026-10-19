@@ -72,6 +72,9 @@ fun ProfileScreen(onOpen: (ProfileLink) -> Unit, onLoggedOut: () -> Unit) {
     LifecycleResumeEffect(Unit) {
         missing = AlertReadiness.check(context).missing.size
         scope.launch { (container.partner.places() as? ApiResult.Success)?.let { places = it.value } }
+        scope.launch {
+            (container.partner.payout() as? ApiResult.Success)?.value?.ifsc?.let { container.banks.describe(it) }
+        }
         onPauseOrDispose { }
     }
     val rider = user?.isRider == true
