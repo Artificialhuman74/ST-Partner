@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
@@ -67,8 +68,8 @@ typealias Spot = Pair<Double, Double>
 enum class Pin { Shop, Customer, Rider, Me }
 
 /**
- * A live OpenStreetMap map (handoff §10): the real road route from OSRM as the canvas's dotted
- * green line, the destination ([to] as a shop or customer pin) and whoever is moving ([mover]:
+ * A live OpenStreetMap map, painted like Google Maps (handoff §10): the real road route from OSRM
+ * as a blue line, the destination ([to] as a shop or customer pin) and whoever is moving ([mover]:
  * the rider for a shop, "me" for the person driving). Still: no panning, it frames itself.
  */
 @Composable
@@ -93,14 +94,21 @@ fun RouteMap(
             val source = style.getSourceAs<GeoJsonSource>("route") ?: GeoJsonSource("route").also { style.addSource(it) }
             source.setGeoJson(feature)
             if (style.getLayer("route-line") == null) {
+                // Google-style route: a solid blue line on a darker blue edge.
                 style.addLayer(
-                    LineLayer("route-line", "route").withProperties(
-                        PropertyFactory.lineColor(St.Green.toArgb()),
-                        PropertyFactory.lineWidth(5f),
+                    LineLayer("route-casing", "route").withProperties(
+                        PropertyFactory.lineColor(RouteEdge.toArgb()),
+                        PropertyFactory.lineWidth(8.5f),
                         PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
                         PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
-                        // The canvas's "stroke-dasharray: 1 10" with round caps: a dotted trail.
-                        PropertyFactory.lineDasharray(arrayOf(0.2f, 2f)),
+                    ),
+                )
+                style.addLayer(
+                    LineLayer("route-line", "route").withProperties(
+                        PropertyFactory.lineColor(RouteBlue.toArgb()),
+                        PropertyFactory.lineWidth(5.5f),
+                        PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+                        PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
                     ),
                 )
             }
@@ -191,12 +199,18 @@ private fun ShopMarker() {
 
 private val PinPath = svgPath("M14 34s-14-13-14-24a14 14 0 0 1 28 0c0 11-14 24-14 24z")
 
+// Google Maps' route blue, destination red and "you are here" dot.
+private val RouteBlue = Color(0xFF4285F4)
+private val RouteEdge = Color(0xFF1967D2)
+private val PinRed = Color(0xFFEA4335)
+private val PinRedDark = Color(0xFFB31412)
+
 @Composable
 private fun CustomerPin() {
     Canvas(Modifier.size(width = 28.dp, height = 34.dp)) {
         viewBox(28f, 34f) {
-            fill(PinPath, St.Green)
-            drawCircle(St.Cream, 5.5f, Offset(14f, 10f))
+            fill(PinPath, PinRed)
+            drawCircle(PinRedDark, 5.5f, Offset(14f, 10f))
         }
     }
 }
@@ -209,9 +223,12 @@ private fun RiderMarker() {
     ) { Icon(StIcons.Scooter, contentDescription = null, tint = St.Ink, modifier = Modifier.size(18.dp)) }
 }
 
+/** The blue "you are here" dot: white ring, soft blue halo. */
 @Composable
 private fun MeDot() {
-    Box(Modifier.size(18.dp).shadow(4.dp, CircleShape).clip(CircleShape).background(St.Cream).padding(3.dp).clip(CircleShape).background(St.Gold))
+    Box(Modifier.size(34.dp).clip(CircleShape).background(RouteBlue.copy(alpha = 0.18f)), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(18.dp).shadow(3.dp, CircleShape).clip(CircleShape).background(Color.White).padding(3.dp).clip(CircleShape).background(RouteBlue))
+    }
 }
 
 @Composable

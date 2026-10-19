@@ -95,8 +95,11 @@ import org.maplibre.android.maps.Style
 import java.util.Locale
 import kotlin.coroutines.resume
 
-/** Free OpenStreetMap vector tiles, no key (handoff §10: OSM/OSRM maps, styled later to look like Google's). */
-const val MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty"
+/**
+ * Free OpenStreetMap vector tiles (OpenFreeMap, no key) in a Google-Maps-like paint, bundled with
+ * the app. Same file as the website's: sanathanatattava/frontend/scripts/build-map-style.mjs.
+ */
+const val MAP_STYLE_URL = "asset://map/st-google.json"
 private val Bengaluru = LatLng(12.9716, 77.5946)
 
 // ── 2 · Where do you start? ──────────────────────────────────────────

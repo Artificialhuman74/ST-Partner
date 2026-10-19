@@ -1,5 +1,6 @@
 package com.sanathanatattva.partner.data.orders
 
+import com.sanathanatattva.partner.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -17,10 +18,10 @@ data class Route(val points: List<Pair<Double, Double>>, val metres: Double, val
 
 object Routing {
     /**
-     * The public OSRM demo server is fine for testing but not allowed for production traffic:
-     * self-host OSRM with the Karnataka extract and point this at it before launch.
+     * Our backend's `GET /api/route`, which asks the self-hosted OSRM server on Railway
+     * (sanathanatattava/osrm). One place to change the routing server, for app and website alike.
      */
-    private const val OSRM = "https://router.project-osrm.org/route/v1/driving"
+    private val ROUTE = "${BuildConfig.BASE_URL.trimEnd('/')}/api/route"
 
     private val client = OkHttpClient.Builder().callTimeout(8, TimeUnit.SECONDS).build()
     private val json = Json { ignoreUnknownKeys = true }
@@ -29,19 +30,19 @@ object Routing {
     /** lat/lng pairs; rounded to ~10 m so a jittery GPS doesn't refetch every few seconds. */
     suspend fun route(from: Pair<Double, Double>, to: Pair<Double, Double>): Route? {
         fun r(v: Double) = "%.4f".format(java.util.Locale.ROOT, v)
-        val key = "${r(from.second)},${r(from.first)};${r(to.second)},${r(to.first)}"
+        val key = "${r(from.first)},${r(from.second)}|${r(to.first)},${r(to.second)}"
         cache[key]?.let { return it }
         return withContext(Dispatchers.IO) {
             runCatching {
-                client.newCall(Request.Builder().url("$OSRM/$key?overview=full&geometries=geojson").build()).execute().use { res ->
+                val url = "$ROUTE?from=${r(from.first)},${r(from.second)}&to=${r(to.first)},${r(to.second)}"
+                client.newCall(Request.Builder().url(url).build()).execute().use { res ->
                     if (!res.isSuccessful) return@use null
                     val body = json.parseToJsonElement(res.body?.string() ?: return@use null).jsonObject
-                    val first = body["routes"]?.jsonArray?.firstOrNull()?.jsonObject ?: return@use null
-                    val coords = first["geometry"]!!.jsonObject["coordinates"]!!.jsonArray.map { c ->
-                        val p = c.jsonArray
-                        p[1].jsonPrimitive.double to p[0].jsonPrimitive.double
+                    val points = body["points"]!!.jsonArray.map { p ->
+                        val ll = p.jsonArray
+                        ll[0].jsonPrimitive.double to ll[1].jsonPrimitive.double
                     }
-                    Route(coords, first["distance"]!!.jsonPrimitive.double, first["duration"]!!.jsonPrimitive.double)
+                    Route(points, body["metres"]!!.jsonPrimitive.double, body["seconds"]!!.jsonPrimitive.double)
                 }
             }.getOrNull()?.also { cache[key] = it }
         }
