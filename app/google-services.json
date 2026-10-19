@@ -1,0 +1,129 @@
+{
+  "project_info": {
+    "project_number": "297106911662",
+    "project_id": "sanathanatattva",
+    "storage_bucket": "sanathanatattva.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297106911662:android:3bfdea36c06a067347983f",
+        "android_client_info": {
+          "package_name": "com.example.sanathanatattva"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOzW-mtKUlHSavwFEpp8s2_5MdkdRT-Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297106911662:android:442acea4b716b7b947983f",
+        "android_client_info": {
+          "package_name": "com.sanathanatattva.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297106911662-71r00fbbhkk9868v1rkif04r7fr33444.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanathanatattva.app",
+            "certificate_hash": "a5349df3d09e0dd826cfa5466b6470d3fd6d60b3"
+          }
+        },
+        {
+          "client_id": "297106911662-engmga6i4cf9mvkvftil6iu2ncln1ni7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanathanatattva.app",
+            "certificate_hash": "625aa9da1e04be906668374a5460fc5618cfc57d"
+          }
+        },
+        {
+          "client_id": "297106911662-l0f31a8aglmo6qvkvngpdjjtfsktcr3k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanathanatattva.app",
+            "certificate_hash": "1f358b5113c9cc34660feb0e6fd25a833c90e112"
+          }
+        },
+        {
+          "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOzW-mtKUlHSavwFEpp8s2_5MdkdRT-Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297106911662:android:d100684e1f7f6a8347983f",
+        "android_client_info": {
+          "package_name": "com.sanathanatattva.partner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297106911662-720ml70qs49m407ohq4c3h6hm68lg9kq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanathanatattva.partner",
+            "certificate_hash": "625aa9da1e04be906668374a5460fc5618cfc57d"
+          }
+        },
+        {
+          "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOzW-mtKUlHSavwFEpp8s2_5MdkdRT-Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297106911662-m3qq3rc7v7osiclbg4n8irmrhbebqrgp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

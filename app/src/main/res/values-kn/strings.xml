@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Kannada. Only screens that have a Kannada design on the canvas are translated
+  (Login, Under review). Everything else falls back to English until the
+  Kannada pass is done (ST_PARTNER_HANDOFF.md §11).
+-->
+<resources>
+    <!-- Login (canvas: LoginKn) -->
+    <string name="login_tagline">ಸನಾತನ ತತ್ವ ಡೆಲಿವರಿ ಪಾಲುದಾರರಿಗಾಗಿ</string>
+    <string name="login_title">ಲಾಗಿನ್ ಮಾಡಿ</string>
+    <string name="login_email">ಇಮೇಲ್</string>
+    <string name="login_password">ಪಾಸ್‌ವರ್ಡ್</string>
+    <string name="login_forgot">ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರಾ?</string>
+    <string name="login_button">ಲಾಗಿನ್ ಮಾಡಿ</string>
+    <string name="login_or">ಅಥವಾ</string>
+    <string name="login_google">Google ಮೂಲಕ ಮುಂದುವರಿಯಿರಿ</string>
+    <string name="login_new_here">ಹೊಸಬರೇ?</string>
+    <string name="login_join">ಡೆಲಿವರಿ ಪಾಲುದಾರರಾಗಿ ಸೇರಿ</string>
+
+    <!-- Under review (canvas: UnderReviewKn) -->
+    <string name="review_log_out">ಲಾಗ್ ಔಟ್</string>
+    <string name="review_title">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಪರಿಶೀಲನೆಯಲ್ಲಿದೆ</string>
+    <string name="review_body">ನಮ್ಮ ತಂಡ ನಿಮ್ಮ ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸುತ್ತಿದೆ. ಶೀಘ್ರದಲ್ಲೇ ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ.</string>
+    <string name="review_step_sent">ವಿವರಗಳನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ</string>
+    <string name="review_step_checking">ತಂಡ ಪರಿಶೀಲಿಸುತ್ತಿದೆ</string>
+    <string name="review_step_checking_body">ಸೆಲ್ಫಿ, ಲೈಸೆನ್ಸ್, PAN ಮತ್ತು ಬ್ಯಾಂಕ್</string>
+    <string name="review_step_start">ನೀವು ಡೆಲಿವರಿ ಆರಂಭಿಸುತ್ತೀರಿ</string>
+    <string name="review_step_start_body">ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್ ಕಳುಹಿಸುತ್ತೇವೆ</string>
+    <string name="call_support">ST ಸಹಾಯವಾಣಿಗೆ ಕರೆ ಮಾಡಿ</string>
+
+    <!-- Signup step 4 (canvas: SignupVehicleKn) -->
+    <string name="signup_title">ಪಾಲುದಾರರಾಗಿ ಸೇರಿ</string>
+    <string name="signup_step">ಹಂತ %1$d / %2$d</string>
+    <string name="signup_back">ಹಿಂದೆ</string>
+    <string name="signup_next">ಮುಂದೆ</string>
+    <string name="signup_vehicle_title">ನೀವು ಹೇಗೆ ಡೆಲಿವರಿ ಮಾಡುತ್ತೀರಿ?</string>
+    <string name="signup_vehicle_body">ಒಂದನ್ನು ಆರಿಸಿ. ನಂತರ ಬದಲಾಯಿಸಬಹುದು.</string>
+    <string name="signup_vehicle_walk">ನಡೆದು</string>
+    <string name="signup_vehicle_cycle">ಸೈಕಲ್</string>
+    <string name="signup_vehicle_scooter">ಸ್ಕೂಟರ್</string>
+    <string name="signup_vehicle_bike">ಬೈಕ್</string>
+    <string name="signup_plate">ವಾಹನ ಸಂಖ್ಯೆ</string>
+    <string name="signup_plate_hint">ಪಿಕಪ್ ಮಾಡುವಾಗ ಅಂಗಡಿಯವರು ಇದನ್ನು ಪರಿಶೀಲಿಸುತ್ತಾರೆ.</string>
+    <string name="signup_no_licence">ನಂಬರ್ ಪ್ಲೇಟ್ ಅಥವಾ ಲೈಸೆನ್ಸ್ ಬೇಕಿಲ್ಲ. ಲೈಸೆನ್ಸ್ ಹಂತವನ್ನು ಬಿಟ್ಟುಬಿಡುತ್ತೇವೆ.</string>
+
+    <!-- Order ring (canvas: RingTraderKn) -->
+    <string name="ring_title_trader">ಹೊಸ ಆರ್ಡರ್</string>
+    <string name="ring_hear_again">ಮತ್ತೆ ಕೇಳಿ</string>
+    <string name="ring_left">ಸ್ವೀಕರಿಸಲು ಉಳಿದ ಸಮಯ</string>
+    <string name="ring_trader_note">ನೀವು ಸ್ವೀಕರಿಸದಿದ್ದರೆ, ನಾವು ರೈಡರ್ ಹುಡುಕುತ್ತೇವೆ. ನೀವು ಪ್ಯಾಕ್ ಮಾಡಿ ಇಡಿ.</string>
+    <string name="ring_slide_accept">ಸ್ವೀಕರಿಸಲು ಸರಿಸಿ</string>
+    <string name="ring_cant_deliver">ನಾನು ಇದನ್ನು ಡೆಲಿವರಿ ಮಾಡಲಾರೆ</string>
+    <string name="ring_commission">ಕಮಿಷನ್</string>
+    <string name="ring_area_km">%1$s · %2$s ಕಿ.ಮೀ</string>
+    <string name="stamp_refill">ರೀಫಿಲ್ ಮಾತ್ರ</string>
+    <string name="stamp_refill_trader">ಹೊಸ ಡಬ್ಬ ಪ್ಯಾಕ್ ಮಾಡಬೇಡಿ</string>
+    <string name="stamp_new_trader">ಹೊಸ ಡಬ್ಬ ಪ್ಯಾಕ್ ಮಾಡಿ</string>
+    <string name="stamp_new_body">ಹೊಸ ಡಬ್ಬಕ್ಕೆ ಹಣ ಕೊಟ್ಟಿದ್ದಾರೆ</string>
+</resources>

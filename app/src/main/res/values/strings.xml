@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">ST Partner</string>
+    <string name="brand_tagline">Purity of tradition in every drop</string>
+    <string name="emblem_description">Sanathana Tattva emblem</string>
+    <!-- ST support line for partners (confirmed by the owner 2026-10-19; same as the website's Support page). -->
+    <string name="support_phone" translatable="false">+919972922514</string>
+
+    <!-- Language picker: shown before a language exists, so both languages are spelled out. -->
+    <string name="language_title_kn" translatable="false">ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="language_title_en" translatable="false">Choose your language</string>
+    <string name="language_kannada_native" translatable="false">ಕನ್ನಡ</string>
+    <string name="language_kannada_in_en" translatable="false">Kannada</string>
+    <string name="language_english_native" translatable="false">English</string>
+    <string name="language_english_in_kn" translatable="false">ಇಂಗ್ಲಿಷ್</string>
+    <string name="language_all_kn" translatable="false">ಇಡೀ ಆ್ಯಪ್ ಮತ್ತು ಧ್ವನಿ ಕನ್ನಡದಲ್ಲಿ ಇರುತ್ತದೆ</string>
+    <string name="language_all_en" translatable="false">The whole app and its voice will be in English</string>
+    <string name="language_later_kn" translatable="false">ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು</string>
+    <string name="language_later_en" translatable="false">You can change this anytime in Profile</string>
+    <string name="language_cta_kn" translatable="false">ಮುಂದುವರಿಸಿ</string>
+    <string name="language_cta_en" translatable="false">Continue</string>
+    <string name="language_preview_home_kn" translatable="false">ಮುಖಪುಟ</string>
+    <string name="language_preview_home_en" translatable="false">Home</string>
+    <string name="language_preview_online_kn" translatable="false">ಆನ್‌ಲೈನ್ ಆಗಿ</string>
+    <string name="language_preview_online_en" translatable="false">Go Online</string>
+    <string name="language_preview_order_kn" translatable="false">ಹೊಸ ಆರ್ಡರ್</string>
+    <string name="language_preview_order_en" translatable="false">New order</string>
+    <string name="language_preview_oil_kn" translatable="false">ಕಡಲೆಕಾಯಿ ಎಣ್ಣೆ</string>
+    <string name="language_preview_oil_en" translatable="false">Groundnut oil</string>
+    <string name="language_preview_accept_kn" translatable="false">ಸ್ವೀಕರಿಸಿ</string>
+    <string name="language_preview_accept_en" translatable="false">Accept</string>
+
+    <!-- Voice used to read screens aloud. Switch to kn-IN in values-kn together with the intro's Kannada copy. -->
+    <string name="narration_locale">en-IN</string>
+
+    <!-- Intro -->
+    <string name="intro_voice_on">Voice on</string>
+    <string name="intro_voice_off">Voice off</string>
+    <string name="intro_skip">Skip</string>
+    <string name="intro_next">Next</string>
+    <string name="intro_start">Let’s start</string>
+    <string name="intro_step">Step %1$d of %2$d</string>
+    <string name="intro1_title">Your phone rings for every new order</string>
+    <string name="intro1_body">A voice tells you what was ordered and who it’s for. Tap Accept to take it.</string>
+    <string name="intro1_art">A phone ringing with a new order for 2 cans of groundnut oil</string>
+    <string name="intro2_title">Pack it, or pick it up</string>
+    <string name="intro2_body">Shops pack the order. Riders show a code at the shop and take it.</string>
+    <string name="intro2_art">A shop packs two cans into a bag while a rider shows a pickup code on their phone</string>
+    <string name="intro3_title">Hand it over with a code and a photo</string>
+    <string name="intro3_body">Ask the customer for their 6-digit code, then photograph the bag at the door. Done!</string>
+    <string name="intro3_art">A 6-digit code is entered, a photo of the bag at the door is taken, and the delivery is marked done</string>
+    <string name="art_new_order">NEW ORDER</string>
+    <string name="art_groundnut_oil">Groundnut oil</string>
+    <string name="art_pickup_code">PICKUP CODE</string>
+    <string name="art_show_shop">Show shop</string>
+    <string name="art_delivered">Delivered</string>
+
+    <!-- Login -->
+    <string name="login_tagline">For Sanathana Tattva delivery partners</string>
+    <string name="login_title">Log in</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_forgot">Forgot password?</string>
+    <string name="login_button">Log in</string>
+    <string name="login_or">or</string>
+    <string name="login_google">Continue with Google</string>
+    <string name="login_new_here">New here?</string>
+    <string name="login_join">Join as a delivery partner</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_hide_password">Hide password</string>
+    <string name="login_error_email">Enter a valid email address</string>
+    <string name="login_error_password">Enter your password</string>
+    <string name="error_network">Can’t reach ST right now. Check your internet and try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="login_google_not_ready">Google sign-in isn’t set up in this build yet. Please use your email.</string>
+    <string name="login_google_failed">Google sign-in didn’t work. Try again, or log in with your email.</string>
+    <string name="login_google_no_accounts">Add a Google account to this phone first, or log in with your email.</string>
+    <string name="login_google_no_account_title">No partner account yet</string>
+    <string name="login_google_no_account_body">%1$s isn’t linked to an ST delivery partner yet. Join with it now, or log in with the email you use with ST.</string>
+    <string name="login_google_this_account">This Google account</string>
+    <string name="call_support">Call ST support</string>
+    <string name="close">Close</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_title">Set a new password</string>
+    <string name="forgot_body">We’ll email you a link. Open it on this phone to set a new password.</string>
+    <string name="forgot_send">Email me the link</string>
+    <string name="forgot_sent_title">Check your email</string>
+    <string name="forgot_sent_body">If %1$s has an ST account, the link is on its way. It works for 15 minutes.</string>
+
+    <!-- Logged in -->
+    <string name="loggedin_title">You’re in, %1$s!</string>
+    <string name="loggedin_body">Opening your orders…</string>
+    <string name="loggedin_loading">Loading</string>
+
+    <!-- Under review -->
+    <string name="review_log_out">Log out</string>
+    <string name="review_title">We’re checking your profile</string>
+    <string name="review_body">Our team is checking your details. We’ll get back to you soon.</string>
+    <string name="review_step_sent">Details sent</string>
+    <string name="review_step_checking">Team is checking</string>
+    <string name="review_step_checking_body">Selfie, licence, PAN and bank</string>
+    <string name="review_step_start">You start delivering</string>
+    <string name="review_step_start_body">We’ll send you a notification</string>
+    <string name="review_art">An oil can slowly filling, drop by drop</string>
+
+    <!-- Join as a delivery partner (rider signup, canvas Signup 1–8) -->
+    <string name="signup_title">Join as a partner</string>
+    <string name="signup_step">Step %1$d of %2$d</string>
+    <string name="signup_back">Back</string>
+    <string name="signup_next">Next</string>
+    <string name="signup_looks_good">Looks good</string>
+    <string name="signup_basics_title">Tell us about you</string>
+    <string name="signup_basics_body">Shops and customers will see your name.</string>
+    <string name="signup_name">Full name</string>
+    <string name="signup_phone">Mobile number</string>
+    <string name="signup_email">Email</string>
+    <string name="signup_email_google">Email (from Google)</string>
+    <string name="signup_password">Create a password</string>
+    <string name="signup_password_hint">At least 8 letters or numbers</string>
+    <string name="signup_base_title">Where do you start?</string>
+    <string name="signup_base_body">Orders near this place come to you.</string>
+    <string name="signup_base_move">Move the map to set the pin</string>
+    <string name="signup_base_my_location">Use my current location</string>
+    <string name="signup_base_save_as">Save this place as</string>
+    <string name="signup_base_home">Home</string>
+    <string name="signup_base_shop">Shop</string>
+    <string name="signup_base_other">Other</string>
+    <string name="signup_base_finding">Finding the address…</string>
+    <string name="signup_base_edit">Edit</string>
+    <string name="signup_base_address">Address of this place</string>
+    <string name="signup_base_more_later">You can add more start places later in Profile.</string>
+    <string name="signup_base_next">Save and next</string>
+    <string name="signup_base_no_location">Turn on location to use where you are now, or move the map.</string>
+    <string name="signup_selfie_title">Take a selfie</string>
+    <string name="signup_selfie_body">Shops and customers see this photo.</string>
+    <string name="signup_selfie_fit">Fit your face in the oval</string>
+    <string name="signup_tip_light">Good light</string>
+    <string name="signup_tip_helmet">No helmet</string>
+    <string name="signup_tip_glasses">No dark glasses</string>
+    <string name="signup_take_photo">Take photo</string>
+    <string name="signup_retake">Retake</string>
+    <string name="signup_use_photo">Use this photo</string>
+    <string name="signup_camera_needed">Allow the camera to take your photo.</string>
+    <string name="signup_camera_allow">Allow camera</string>
+    <string name="signup_vehicle_title">How will you deliver?</string>
+    <string name="signup_vehicle_body">Pick one. You can change it later.</string>
+    <string name="signup_vehicle_walk">Walking</string>
+    <string name="signup_vehicle_cycle">Cycle</string>
+    <string name="signup_vehicle_scooter">Scooter</string>
+    <string name="signup_vehicle_bike">Bike</string>
+    <string name="signup_plate">Number plate</string>
+    <string name="signup_plate_hint">Shops check this when you pick up.</string>
+    <string name="signup_no_licence">No number plate or licence needed. We’ll skip the licence step.</string>
+    <string name="signup_licence_title">Your driving licence</string>
+    <string name="signup_licence_body">Front and back. All the writing must be clear.</string>
+    <string name="signup_front">Front</string>
+    <string name="signup_back_side">Back side</string>
+    <string name="signup_tap_photo">Tap to take a photo</string>
+    <string name="signup_clear">Clear</string>
+    <string name="signup_maybe_blurry">Might be blurry</string>
+    <string name="signup_licence_number">Licence number</string>
+    <string name="signup_private_docs">Only the ST team can see your documents.</string>
+    <string name="signup_card_fit">Fit the whole card in the frame</string>
+    <string name="signup_bank_title">Where should we send your money?</string>
+    <string name="signup_bank_body">You’re paid through Razorpay, straight to your bank. They need these details.</string>
+    <string name="signup_pan_card">PAN card</string>
+    <string name="signup_pan_photo">PAN card photo</string>
+    <string name="signup_pan_number">PAN number</string>
+    <string name="signup_bank_account">Bank account</string>
+    <string name="signup_account_name">Account holder’s name</string>
+    <string name="signup_account_name_hint">As written in your bank passbook</string>
+    <string name="signup_account_number">Account number</string>
+    <string name="signup_account_again">Type account number again</string>
+    <string name="signup_account_match">Both numbers match</string>
+    <string name="signup_ifsc">IFSC code</string>
+    <string name="signup_bank_safety">We will never ask for your bank PIN, OTP or password.</string>
+    <string name="signup_emergency_title">We look out for you</string>
+    <string name="signup_emergency_body">Add someone close to you. We’ll only call them if you ever need help.</string>
+    <string name="signup_emergency_name">Their name</string>
+    <string name="signup_pick_contact">Pick from contacts</string>
+    <string name="signup_they_are">They are your</string>
+    <string name="signup_emergency_phone">Their mobile number</string>
+    <string name="signup_connected">You and %1$s, connected</string>
+    <string name="relation_mother">Mother</string>
+    <string name="relation_father">Father</string>
+    <string name="relation_wife">Wife</string>
+    <string name="relation_husband">Husband</string>
+    <string name="relation_brother">Brother</string>
+    <string name="relation_sister">Sister</string>
+    <string name="relation_friend">Friend</string>
+    <string name="relation_other">Other</string>
+    <string name="signup_review_title">Check and send</string>
+    <string name="signup_review_body">Tap Edit to change anything.</string>
+    <string name="signup_review_base">Base place</string>
+    <string name="signup_review_licence">Driving licence</string>
+    <string name="signup_review_licence_ok">Front and back</string>
+    <string name="signup_review_bank">PAN and bank</string>
+    <string name="signup_review_emergency">Emergency contact</string>
+    <string name="signup_review_vehicle">Vehicle</string>
+    <string name="signup_confirm">I confirm these details are mine and correct.</string>
+    <string name="signup_send">Send for review</string>
+    <string name="signup_sending">Sending your details…</string>
+    <string name="signup_join_google">Join with this Google account</string>
+
+    <!-- Signup checks (shown under a field) -->
+    <string name="check_name">Enter your full name</string>
+    <string name="check_phone">Enter a 10-digit mobile number</string>
+    <string name="check_password">Use at least 8 letters or numbers</string>
+    <string name="check_base">Set the pin on the map and add the address</string>
+    <string name="check_selfie">Take a selfie first</string>
+    <string name="check_vehicle">Pick how you will deliver</string>
+    <string name="check_plate">Enter your number plate</string>
+    <string name="check_licence_number">Enter your licence number</string>
+    <string name="check_licence_photos">Take photos of the front and back</string>
+    <string name="check_pan">PAN looks like ABCDE1234F</string>
+    <string name="check_pan_photo">Take a photo of your PAN card</string>
+    <string name="check_account_name">Enter the name on your bank account</string>
+    <string name="check_account_number">Account number is 9 to 18 digits</string>
+    <string name="check_account_match">The two account numbers don’t match</string>
+    <string name="check_ifsc">IFSC looks like HDFC0001234</string>
+    <string name="check_emergency_name">Enter their name</string>
+    <string name="check_relation">Pick how they are related to you</string>
+    <string name="check_emergency_phone">Enter their 10-digit mobile number</string>
+    <string name="check_emergency_self">Use someone else’s number, not your own</string>
+
+    <!-- Approved / sent back (canvas Approved, Rejected) -->
+    <string name="approved_title">You’re approved!</string>
+    <string name="approved_body">Welcome to ST Partner, %1$s. One last step: turn on alerts so you never miss an order.</string>
+    <string name="approved_cta">Set up alerts</string>
+    <plurals name="rejected_heading">
+        <item quantity="one">One thing needs fixing</item>
+        <item quantity="other">%1$d things need fixing</item>
+    </plurals>
+    <string name="rejected_all_fixed">All fixed!</string>
+    <string name="rejected_sub_one">Fix it, then send your profile again.</string>
+    <string name="rejected_sub_many">Fix each one, then send your profile again.</string>
+    <string name="rejected_sub_done">Send your profile again for a quick check.</string>
+    <string name="rejected_progress">%1$d of %2$d fixed</string>
+    <string name="rejected_fixed">Fixed</string>
+    <string name="rejected_redo">Redo</string>
+    <string name="rejected_fine">These are all fine</string>
+    <string name="rejected_send">Send again</string>
+    <plurals name="rejected_left">
+        <item quantity="one">Fix 1 more to send</item>
+        <item quantity="other">Fix %1$d more to send</item>
+    </plurals>
+    <string name="issue_selfie">Selfie</string>
+    <string name="issue_licence_front">Driving licence · front</string>
+    <string name="issue_licence_back">Driving licence · back</string>
+    <string name="issue_pan">PAN card</string>
+    <string name="issue_bank">Bank account</string>
+    <string name="issue_vehicle">Vehicle</string>
+    <string name="issue_emergency">Emergency contact</string>
+    <string name="issue_base">Base place</string>
+    <string name="fix_retake_selfie">Retake selfie</string>
+    <string name="fix_retake_licence">Retake licence photo</string>
+    <string name="fix_retake_pan">Retake PAN photo</string>
+    <string name="fix_bank">Fix bank details</string>
+    <string name="fix_vehicle">Change vehicle</string>
+    <string name="fix_emergency">Fix emergency contact</string>
+    <string name="fix_base">Move the pin</string>
+    <string name="fix_save">Save this fix</string>
+    <string name="time_today">Today</string>
+    <string name="time_yesterday">Yesterday</string>
+
+    <!-- Notification channels -->
+    <string name="channel_account_id" translatable="false">account_updates</string>
+    <string name="channel_account_name">Account updates</string>
+    <string name="channel_account_body">Approval and profile news from ST</string>
+    <string name="notify_permission_title">Get told the moment you’re approved</string>
+    <string name="notify_permission_body">Allow notifications so we can tell you when the team is done.</string>
+    <string name="notify_permission_allow">Allow notifications</string>
+
+    <!-- Order ring (canvas Ringing · trader / rider) -->
+    <string name="ring_title_trader">New order</string>
+    <string name="ring_title_rider">New delivery</string>
+    <string name="ring_hear_again">Hear again</string>
+    <string name="ring_left">left to accept</string>
+    <string name="ring_trader_note">If you don’t accept, we’ll find a rider and you pack it.</string>
+    <string name="ring_test_note">This is a test alert. Nothing to deliver.</string>
+    <string name="ring_slide_accept">Slide to accept</string>
+    <string name="ring_skip">Skip</string>
+    <string name="ring_cant_deliver">I can’t deliver this</string>
+    <string name="ring_what_you_carry">What you carry</string>
+    <string name="ring_load">%1$d cans · %2$s L</string>
+    <string name="ring_you_earn">You earn</string>
+    <string name="ring_area_km">%1$s · %2$s km</string>
+    <string name="ring_commission">Commission</string>
+    <string name="ring_pickup_km">Pick up · %1$s km from you</string>
+    <string name="ring_deliver_km">Deliver · %1$s km from shop</string>
+    <string name="ring_test_done_title">Your phone is ready for orders</string>
+    <string name="ring_test_done_body">That’s exactly how a real order will ring.</string>
+    <string name="stamp_refill">REFILL ONLY</string>
+    <string name="stamp_refill_trader">Don’t pack new cans</string>
+    <string name="stamp_refill_rider">Don’t take new cans</string>
+    <string name="stamp_new_trader">PACK A NEW CAN</string>
+    <string name="stamp_new_rider">TAKE A NEW CAN</string>
+    <string name="stamp_new_body">They paid for a new can</string>
+    <string name="channel_orders_name">New orders</string>
+    <string name="channel_orders_body">Rings like a phone call when an order comes in</string>
+    <string name="channel_online_id" translatable="false">online_status</string>
+    <string name="channel_online_name">You’re online</string>
+    <string name="channel_online_body">Shows while you’re taking orders</string>
+
+    <!-- Permission checklist (canvas Permission checklist) -->
+    <string name="perm_title">Set up alerts</string>
+    <string name="perm_count">%1$d of 5 on</string>
+    <string name="perm_ready">All set! You can go online</string>
+    <string name="perm_ready_online">All set! Orders will ring through</string>
+    <plurals name="perm_left">
+        <item quantity="one">1 thing left to turn on</item>
+        <item quantity="other">%1$d things left to turn on</item>
+    </plurals>
+    <string name="perm_body">Orders ring like a phone call. These make sure the call always gets through.</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="perm_notifications_why">So new orders reach you</string>
+    <string name="perm_location">Location</string>
+    <string name="perm_location_why">To find orders near you</string>
+    <string name="perm_battery">Battery: no limits</string>
+    <string name="perm_battery_why">So the phone never stops the app</string>
+    <string name="perm_full">Full-screen alerts</string>
+    <string name="perm_full_why">Rings even when the phone is locked</string>
+    <string name="perm_dnd">Ring on Do Not Disturb</string>
+    <string name="perm_dnd_why">Rings even when the phone is silent</string>
+    <string name="perm_turn_on">Turn on</string>
+    <string name="perm_on">On</string>
+    <string name="perm_autostart">%1$s phone? Also turn on Autostart</string>
+    <string name="perm_go">Go online</string>
+    <string name="perm_done_online">Done · you’re online</string>
+    <string name="perm_locked">Turn these on to go online</string>
+    <string name="perm_test">Send me a test alert</string>
+    <string name="perm_test_sent">Test alert sent. Your phone should ring in a few seconds.</string>
+    <string name="perm_warning_title">Orders can’t ring you</string>
+    <string name="perm_warning_body">%1$s got turned off on this phone.</string>
+    <string name="perm_warning_cta">Turn it back on</string>
+    <string name="perm_all_on">Alerts ready · all 5 settings on</string>
+
+    <!-- Autostart guides -->
+    <string name="guide_title">One more switch on %1$s phones</string>
+    <string name="guide_body">Some phones stop apps to save battery. This switch keeps orders ringing.</string>
+    <string name="guide_open">Open Settings for me</string>
+    <string name="guide_done">I’ve turned it on</string>
+    <string name="guide_mi_1_title">Open Apps</string>
+    <string name="guide_mi_1_body">In Settings, tap Apps, then Manage apps</string>
+    <string name="guide_mi_2_title">Tap ST Partner</string>
+    <string name="guide_mi_2_body">Find it in the list of apps</string>
+    <string name="guide_mi_3_title">Turn on Autostart</string>
+    <string name="guide_mi_3_body">The switch turns green. Then come back here.</string>
+    <string name="guide_coloros_1_title">Open Battery</string>
+    <string name="guide_coloros_1_body">In Settings, tap Battery, then App battery management</string>
+    <string name="guide_coloros_2_title">Tap ST Partner</string>
+    <string name="guide_coloros_2_body">Find it in the list of apps</string>
+    <string name="guide_coloros_3_title">Allow auto launch and background</string>
+    <string name="guide_coloros_3_body">Turn on Allow auto launch and Allow background activity. Then come back here.</string>
+    <string name="guide_vivo_1_title">Open i Manager</string>
+    <string name="guide_vivo_1_body">Tap App manager, then Autostart manager</string>
+    <string name="guide_vivo_2_title">Find ST Partner</string>
+    <string name="guide_vivo_2_body">It’s in the list of apps</string>
+    <string name="guide_vivo_3_title">Turn on Autostart</string>
+    <string name="guide_vivo_3_body">The switch turns blue. Then come back here.</string>
+    <string name="guide_samsung_1_title">Open Battery</string>
+    <string name="guide_samsung_1_body">In Settings, tap Battery, then Background usage limits</string>
+    <string name="guide_samsung_2_title">Never sleeping apps</string>
+    <string name="guide_samsung_2_body">Tap Never sleeping apps, then the plus button</string>
+    <string name="guide_samsung_3_title">Add ST Partner</string>
+    <string name="guide_samsung_3_body">Tick ST Partner and tap Add. Then come back here.</string>
+
+    <!-- Home (canvas Home offline / online) -->
+    <string name="home_partner_trader">Shop partner</string>
+    <string name="home_partner_rider">Rider</string>
+    <string name="home_offline">You’re offline</string>
+    <string name="home_offline_body">No orders will come to you now.</string>
+    <string name="home_go_online">Go Online</string>
+    <string name="home_online">You’re online</string>
+    <string name="home_waiting_near_you">Waiting for orders near you</string>
+    <string name="home_waiting">Waiting for orders</string>
+    <string name="home_go_offline">Slide to go offline</string>
+    <string name="home_last_started">Last started from</string>
+    <string name="home_started_from">Started from</string>
+    <string name="home_change">Change</string>
+    <string name="home_here">Where I was</string>
+    <string name="home_keep_notification">Keep the “You’re online” notification in your bar. It keeps orders coming.</string>
+    <string name="home_today">Today</string>
+    <string name="home_all_earnings">All earnings</string>
+    <string name="home_deliveries">deliveries</string>
+    <string name="home_earned">earned</string>
+    <string name="home_nav_home">Home</string>
+    <string name="home_nav_earnings">Earnings</string>
+    <string name="home_nav_profile">Profile</string>
+    <string name="home_auto_offline_title">We’ve set you offline</string>
+    <string name="home_auto_offline_body">You missed 3 orders in a row, so we’ve set you offline. Go online again when you’re ready.</string>
+    <string name="home_offline_failed">Couldn’t go online. Check your internet and try again.</string>
+    <string name="online_notification_title">You’re online</string>
+    <string name="online_notification_body">Waiting for orders. Keep this here.</string>
+    <string name="online_notification_stop">Go offline</string>
+
+    <!-- Start place picker (canvas Go online · pick start place) -->
+    <string name="base_title">Where are you starting from?</string>
+    <string name="base_body">Orders near this place come to you first.</string>
+    <string name="base_here_title">Where I am now</string>
+    <string name="base_here_body">Use my live location</string>
+    <string name="base_you_are_here">You’re here</string>
+    <string name="base_km_away">%1$s km</string>
+    <string name="base_note">We check where you are every few minutes. If you move away from this place, orders come by where you are.</string>
+    <string name="base_go_from">Go online from %1$s</string>
+    <string name="base_go_here">Go online from here</string>
+    <string name="label_home">Home</string>
+    <string name="label_shop">Shop</string>
+    <string name="label_other">Other</string>
+
+    <!-- Profile (canvas Profile, Start places) -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_start_places">Start places</string>
+    <string name="profile_badge_rider">Approved rider</string>
+    <string name="profile_badge_trader">Partner</string>
+    <string name="profile_vehicle">Vehicle</string>
+    <string name="profile_delivery_hours">Delivery hours</string>
+    <string name="profile_payout">Payout details</string>
+    <string name="profile_alerts_ok">Alerts check · all 5 settings on</string>
+    <string name="profile_rider_jobs">Also take rider jobs</string>
+    <string name="profile_rider_jobs_body">Deliver other shops’ orders near you</string>
+    <string name="profile_pickups">Empty can pickups</string>
+    <string name="profile_alerts">Alert settings</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_language_value">English · ಕನ್ನಡ</string>
+    <string name="profile_support">Call ST support</string>
+    <string name="profile_log_out">Log out</string>
+    <string name="earnings_title">Earnings</string>
+    <string name="earnings_last7">Last 7 days</string>
+    <plurals name="earnings_summary">
+        <item quantity="one">%1$d delivery · %2$s</item>
+        <item quantity="other">%1$d deliveries · %2$s</item>
+    </plurals>
+    <plurals name="earnings_deliveries">
+        <item quantity="one">%d delivery</item>
+        <item quantity="other">%d deliveries</item>
+    </plurals>
+    <string name="earnings_day_off">Day off</string>
+    <string name="earnings_today">Today, %s</string>
+    <string name="earnings_today_short">Today</string>
+    <string name="earnings_bar_desc">%1$s: %2$s, %3$s</string>
+    <string name="earnings_sent_to">%1$s sent to %2$s ····%3$s</string>
+    <string name="earnings_sent">%s sent to your bank</string>
+    <string name="earnings_your_bank">your bank</string>
+    <string name="earnings_on_the_way">%s on the way</string>
+    <string name="earnings_details">Details</string>
+    <string name="payout_bank_account">Bank account</string>
+    <string name="payout_no_bank">No bank added</string>
+    <string name="payout_name">Name</string>
+    <string name="payout_ifsc">IFSC</string>
+    <string name="payout_pan">PAN %s</string>
+    <string name="payout_verified">Verified</string>
+    <string name="payout_on">Payouts are on</string>
+    <string name="payout_setting_up">Setting up payouts</string>
+    <string name="payout_needs_info">Our team needs one more detail</string>
+    <string name="payout_via">via Razorpay</string>
+    <string name="payout_step_made">Account made</string>
+    <string name="payout_step_bank">Bank added</string>
+    <string name="payout_step_checked">Checked</string>
+    <string name="payout_step_active">Active</string>
+    <string name="payout_body">Money for each delivery is sent to this bank after the delivery is done.</string>
+    <string name="payout_recent">Recent</string>
+    <string name="payout_sent">Sent</string>
+    <string name="payout_on_way">On the way</string>
+    <string name="payout_change">Change bank account</string>
+    <string name="payout_change_note">Call us to change it. Our team checks new bank details before payouts restart.</string>
+    <string name="hours_title">When do you deliver?</string>
+    <string name="hours_body">Tap a day to change it.</string>
+    <string name="hours_saved">Saved</string>
+    <string name="hours_saving">Saving…</string>
+    <string name="hours_range">%1$s to %2$s</string>
+    <string name="hours_closed_word">Closed</string>
+    <string name="hours_open_word">Open</string>
+    <string name="hours_closed_caps">CLOSED</string>
+    <string name="hours_today_suffix">" · today"</string>
+    <string name="hours_opens">Opens</string>
+    <string name="hours_closes">Closes</string>
+    <string name="hours_open_earlier">Open 30 minutes earlier</string>
+    <string name="hours_open_later">Open 30 minutes later</string>
+    <string name="hours_close_earlier">Close 30 minutes earlier</string>
+    <string name="hours_close_later">Close 30 minutes later</string>
+    <string name="hours_copy_weekdays">Copy to all weekdays</string>
+    <string name="hours_copy_weekend">Copy to the weekend</string>
+    <string name="hours_note">Orders placed outside these hours wait until you open. The ST team can also change your hours.</string>
+    <string name="jobs_title">Rider jobs</string>
+    <string name="jobs_heading">Also deliver for other shops?</string>
+    <string name="jobs_point_ring">Orders from shops near you will <b>ring your phone</b> when you’re online.</string>
+    <string name="jobs_point_earn">You pick up from that shop and deliver it. You earn <b>%s a delivery</b>.</string>
+    <string name="jobs_point_first"><b>Your own shop comes first.</b> One order at a time.</string>
+    <string name="jobs_point_off">Turn it off any time from your Profile.</string>
+    <string name="jobs_hold">Hold to turn on</string>
+    <string name="jobs_keep_holding">Keep holding…</string>
+    <string name="jobs_hold_hint">Press and hold for 2 seconds. A quick tap does nothing.</string>
+    <string name="jobs_not_now">Not now</string>
+    <string name="jobs_on">Rider jobs are on</string>
+    <string name="jobs_on_body">Go online and nearby orders will ring you.</string>
+    <string name="jobs_turn_off">Turn off</string>
+    <string name="jobs_done">Done</string>
+    <string name="profile_rider_jobs_on">On · nearby orders ring you</string>
+    <string name="edit_title">Edit profile</string>
+    <string name="edit_name">Full name</string>
+    <string name="edit_phone">Mobile number</string>
+    <string name="edit_email">Email</string>
+    <string name="edit_email_note">To change your email or vehicle, call ST support.</string>
+    <string name="edit_save">Save</string>
+    <plurals name="pickup_title">
+        <item quantity="one">%d can to collect</item>
+        <item quantity="other">%d cans to collect</item>
+    </plurals>
+    <string name="pickup_body">Customers are returning cans for their deposit.</string>
+    <string name="pickup_none">No cans to collect</string>
+    <string name="pickup_none_body">When a customer returns a can for their deposit, it shows up here.</string>
+    <string name="pickup_deposit">Deposit</string>
+    <string name="pickup_can">1 × %s steel can</string>
+    <string name="pickup_asked_for">Asked for: <b>%s</b></string>
+    <string name="pickup_fine">Can is fine · refund</string>
+    <string name="pickup_damaged">Can is damaged</string>
+    <string name="pickup_close">Close</string>
+    <string name="pickup_refund_title">Refund %1$s to %2$s</string>
+    <string name="pickup_they_asked">They asked for %s.</string>
+    <string name="pickup_credit">Store credit</string>
+    <string name="pickup_credit_body">Reaches their ST wallet right away</string>
+    <string name="pickup_upi">UPI from my phone</string>
+    <string name="pickup_upi_body">Pay now and add a screenshot. Admin pays you back.</string>
+    <string name="pickup_bank">Bank transfer by admin</string>
+    <string name="pickup_bank_body">Admin sends it later</string>
+    <string name="pickup_add_shot">Add UPI payment screenshot</string>
+    <string name="pickup_change_shot">Screenshot added · change</string>
+    <string name="pickup_need_shot">Add the UPI payment screenshot first</string>
+    <string name="pickup_refund_done">Collected · refund done</string>
+    <string name="pickup_damage_title">The can is damaged</string>
+    <string name="pickup_damage_warning">The customer keeps no deposit. They get <b>48 hours</b> to disagree, so take a clear photo of the damage.</string>
+    <string name="pickup_take_photo">Take a photo of the damage</string>
+    <string name="pickup_damage_photo">Photo of the damage</string>
+    <string name="pickup_damage_hint">Show the damage clearly</string>
+    <string name="pickup_whats_wrong">What’s wrong? (short)</string>
+    <string name="pickup_whats_wrong_hint">Dent on the side, lid broken…</string>
+    <string name="pickup_need_photo">Take a photo of the damage first</string>
+    <string name="pickup_keep_deposit">Keep deposit · send to admin</string>
+    <string name="ring_gone">This order has gone to someone else.</string>
+    <string name="ring_load_failed">Couldn’t load this order. Check your internet, then open ST Partner.</string>
+    <!-- Orders: shop and rider delivery screens -->
+    <string name="order_title">Order #%s</string>
+    <string name="order_rider_delivers">Rider delivers</string>
+    <string name="order_commission">Commission %s</string>
+    <string name="order_you_earn">You earn %s</string>
+    <string name="order_packed">Packed</string>
+    <string name="order_returning">Returning</string>
+    <string name="order_open_maps">Open Maps</string>
+    <string name="google_maps">Google Maps</string>
+    <string name="order_paid_online">Paid online. Don’t take any cash.</string>
+    <string name="order_rider_photo">%s’s photo</string>
+    <string name="order_back_to_orders">Back to orders</string>
+    <string name="order_need_help">Need help? Call ST support</string>
+    <string name="order_complete">Complete order</string>
+    <string name="order_couldnt">Couldn’t deliver?</string>
+    <string name="order_take_to">Take it to %s</string>
+    <string name="km">%s km</string>
+    <string name="km_away">%s km away</string>
+    <string name="call_shop">Call shop</string>
+    <string name="call_the_shop">Call the shop</string>
+    <string name="call_person">Call %s</string>
+    <string name="call_person_number">Call %1$s · %2$s</string>
+    <string name="chip_new_can">NEW CAN</string>
+    <string name="pad_clear">Clear</string>
+    <string name="pad_delete">Delete last number</string>
+    <string name="saved">Saved</string>
+    <string name="step_pack">Pack</string>
+    <string name="step_packed">Packed</string>
+    <string name="step_on_way">On the way</string>
+    <string name="step_hand_over">Hand over</string>
+    <string name="step_to_shop">To the shop</string>
+    <string name="step_at_shop">At the shop</string>
+    <string name="step_pick_up">Pick up</string>
+    <string name="step_picked_up">Picked up</string>
+    <string name="step_deliver">Deliver</string>
+    <string name="pack_title">Pack this order</string>
+    <string name="pack_tick_each">Tick each item when packed</string>
+    <string name="pack_tick_one">Tick 1 more item when packed</string>
+    <string name="pack_start">Packed · start delivery</string>
+    <string name="pack_ready_pickup">Packed · ready for pickup</string>
+    <string name="pack_waiting_rider">Packed · waiting for the rider</string>
+    <string name="pack_share">Your share on rider orders</string>
+    <string name="rider_finding">Finding a rider near you…</string>
+    <string name="rider_finding_body">Pack it now so it’s ready when they come.</string>
+    <string name="rider_coming">%s is coming</string>
+    <string name="rider_coming_km">%1$s is coming · %2$s km</string>
+    <string name="rider_coming_title">%s is coming</string>
+    <string name="rider_coming_body">Keep the order ready at the counter.</string>
+    <string name="rider_delivering_title">%s is delivering it</string>
+    <string name="rider_delivering_body">You’ll get a message when it’s delivered.</string>
+    <string name="rider_returning_title">%s is bringing it back</string>
+    <string name="rider_returning_body">It couldn’t be delivered. Take it back with their code; it goes out again tomorrow.</string>
+    <string name="rider_here_code">%s is here · enter their code</string>
+    <string name="code_is_this">Is this %s?</string>
+    <string name="code_check_face">Check their face and number plate first.</string>
+    <string name="code_type">Type %s’s code</string>
+    <string name="code_type_body">They show 4 numbers on their phone.</string>
+    <string name="code_ok_hand">Code is correct. Hand it to %s.</string>
+    <string name="code_ok_back">Code is correct. Take the oil back.</string>
+    <string name="code_handed_over">Handed over to %s</string>
+    <string name="code_took_back">Got the oil back from %s</string>
+    <string name="code_ask">Ask %s for their code</string>
+    <string name="code_ask_body">It’s 6 numbers, in their ST app and email.</string>
+    <string name="code_correct">Code is correct</string>
+    <string name="code_resend">Send them the code again</string>
+    <string name="code_resent">New code sent to the customer</string>
+    <string name="code_next_photo">Next: photo at the door</string>
+    <string name="code_ok_chip">Code OK</string>
+    <string name="door_title">Photo at the door</string>
+    <string name="door_body">Show the cans at %s’s door. This is your proof of delivery.</string>
+    <string name="door_frame_hint">Cans and door in the frame</string>
+    <string name="door_take">Take photo</string>
+    <string name="door_retake">Retake</string>
+    <string name="door_done">Done · delivered</string>
+    <string name="door_saved">Photo saved</string>
+    <string name="door_photo_desc">Photo of the cans at the door</string>
+    <string name="fail_title">What happened?</string>
+    <string name="fail_body_rider">The oil goes back to the shop and we try again tomorrow.</string>
+    <string name="fail_body_shop">Keep the oil at your shop. We’ll try again tomorrow.</string>
+    <string name="fail_call_first">Try calling %s first</string>
+    <string name="fail_call">Call</string>
+    <string name="fail_not_home">Customer not at home</string>
+    <string name="fail_phone_off">Phone off or not answering</string>
+    <string name="fail_wrong_address">Wrong or unclear address</string>
+    <string name="fail_refused">Customer said no</string>
+    <string name="fail_other">Something else</string>
+    <string name="fail_pick">Pick what happened</string>
+    <string name="fail_return">Return the oil to the shop</string>
+    <string name="fail_keep">Keep it at the shop · try tomorrow</string>
+    <string name="rider_at_shop">I’m at the shop</string>
+    <string name="rider_go_to">Go to %s</string>
+    <string name="rider_collect">Collect from the shop</string>
+    <string name="rider_go_customer">Go to the customer</string>
+    <string name="pickup_brightness">Brightness up</string>
+    <string name="pickup_show_title">Show this code to the shop</string>
+    <string name="pickup_done_title">Picked up!</string>
+    <string name="pickup_code_label">Pickup code</string>
+    <string name="pickup_waiting_shop">Waiting for %s to type it</string>
+    <string name="pickup_confirmed">Shop confirmed · picked up</string>
+    <string name="pickup_shop_sees">The shop sees</string>
+    <string name="pickup_check">Check before you leave</string>
+    <string name="return_title">Take the oil back to %s</string>
+    <string name="return_done_title">Oil returned. Thank you!</string>
+    <string name="return_tomorrow">We’ll try again tomorrow. %s gets a new delivery then.</string>
+    <string name="return_show_code">Show this code at the shop</string>
+    <string name="return_code_label">Return code</string>
+    <string name="return_waiting">%s types it to take the oil back</string>
+    <string name="return_got_back">Shop got the oil back</string>
+    <string name="return_give_back">Give back all of it</string>
+    <string name="return_cans">%d cans</string>
+    <string name="return_maps">Maps to shop</string>
+    <string name="tomorrow_title">Back at the shop. We’ll try again tomorrow.</string>
+    <string name="tomorrow_body">It’ll ring you again when your delivery hours start.</string>
+    <string name="tomorrow_keep">Keep this ready</string>
+    <string name="delivered_title">Delivered!</string>
+    <string name="delivered_body">%s has their oil. Door photo saved.</string>
+    <string name="delivered_earned">You earned</string>
+    <string name="delivered_commission">Your commission</string>
+    <string name="home_offer_waiting">New order waiting for you</string>
+    <string name="home_order_in_progress">Order #%s</string>
+    <string name="active_pack">Pack it, then start the delivery</string>
+    <string name="active_on_the_way">On the way to the customer</string>
+    <string name="active_pack_for_rider">Pack it for the rider</string>
+    <string name="active_rider_coming">The rider is coming to pick it up</string>
+    <string name="active_rider_delivering">The rider is delivering it</string>
+    <string name="active_rider_returning_shop">The rider is bringing it back</string>
+    <string name="active_rider_to_shop">Go to the shop to pick it up</string>
+    <string name="active_rider_to_customer">Take it to the customer</string>
+    <string name="active_rider_returning">Take it back to the shop</string>
+    <string name="places_title">Where you start from</string>
+    <string name="places_body">You pick one each time you go online.</string>
+    <string name="places_default">Default</string>
+    <string name="places_make_default">Make default</string>
+    <string name="places_add">Add a place</string>
+    <string name="places_note">When you’re away from these places, orders come by your live location.</string>
+    <string name="places_save">Save this place</string>
+    <string name="places_delete">Remove</string>
+    <string name="earnings_soon">Your weekly earnings, payouts and history.</string>
+
+    <!-- Home (temporary until the work loop is built) -->
+    <string name="home_greeting">Hi, %1$s</string>
+    <string name="home_coming_title">Your home screen is next</string>
+    <string name="home_coming_body">Going online, order alerts and deliveries are the next part of the build.</string>
+    <string name="home_log_out">Log out</string>
+</resources>
