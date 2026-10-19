@@ -18,6 +18,7 @@ import com.sanathanatattva.partner.data.partner.StartPoint
 import com.sanathanatattva.partner.ui.signup.currentLocation
 import com.sanathanatattva.partner.ui.signup.hasLocationPermission
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val container = app.appContainer
@@ -68,33 +69,66 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         if (hasLocationPermission(getApplication())) viewModelScope.launch { currentLocation(getApplication())?.let { here = it } }
     }
 
+    /**
+     * "Go online" before Home has loaded (slow network, just back from the ring): load it,
+     * then [onLoaded] opens the start-place picker. A failure shows the retry line instead
+     * of the slide silently doing nothing.
+     */
+    fun loadHomeThen(onLoaded: () -> Unit) {
+        if (busy) return
+        busy = true
+        failed = false
+        viewModelScope.launch {
+            try {
+                val r = withTimeoutOrNull(ACTION_TIMEOUT_MS) { container.partner.home() }
+                if (r is ApiResult.Success) { home = r.value; onLoaded() } else failed = true
+            } finally {
+                busy = false
+            }
+        }
+    }
+
     fun goOnline(from: StartPoint) {
         if (busy) return
         busy = true
         failed = false
         viewModelScope.launch {
-            when (container.partner.goOnline(from, here?.first, here?.second)) {
-                is ApiResult.Success -> {
-                    OnlineService.start(getApplication())
-                    autoOfflineDismissed = true
-                    home = (container.partner.home() as? ApiResult.Success)?.value ?: home
+            // Whatever happens (timeout, error), the switch is never left busy.
+            try {
+                when (withTimeoutOrNull(ACTION_TIMEOUT_MS) { container.partner.goOnline(from, here?.first, here?.second) }) {
+                    is ApiResult.Success -> {
+                        OnlineService.start(getApplication())
+                        autoOfflineDismissed = true
+                        home = (withTimeoutOrNull(ACTION_TIMEOUT_MS) { container.partner.home() } as? ApiResult.Success)?.value
+                            ?: home?.copy(online = true)
+                    }
+                    else -> failed = true
                 }
-                is ApiResult.Failure -> failed = true
+            } finally {
+                busy = false
             }
-            busy = false
         }
     }
 
     fun goOffline() {
         if (busy) return
         busy = true
+        failed = false
         viewModelScope.launch {
-            container.partner.goOffline()
-            OnlineService.stopOnline(getApplication())
-            home = (container.partner.home() as? ApiResult.Success)?.value ?: home?.copy(online = false)
-            busy = false
+            try {
+                withTimeoutOrNull(ACTION_TIMEOUT_MS) { container.partner.goOffline() }
+                OnlineService.stopOnline(getApplication())
+                home = (withTimeoutOrNull(ACTION_TIMEOUT_MS) { container.partner.home() } as? ApiResult.Success)?.value
+                    ?: home?.copy(online = false)
+            } finally {
+                busy = false
+            }
         }
     }
 
     val ready: Readiness get() = readiness
+
+    private companion object {
+        const val ACTION_TIMEOUT_MS = 25_000L
+    }
 }

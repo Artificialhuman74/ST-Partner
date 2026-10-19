@@ -267,6 +267,8 @@
     <!-- Notification channels -->
     <string name="channel_account_id" translatable="false">account_updates</string>
     <string name="channel_account_name">Account updates</string>
+    <string name="channel_updates_name">Order updates</string>
+    <string name="channel_updates_body">Pack this order, rider coming, picked up, delivered</string>
     <string name="channel_account_body">Approval and profile news from ST</string>
     <string name="notify_permission_title">Get told the moment you’re approved</string>
     <string name="notify_permission_body">Allow notifications so we can tell you when the team is done.</string>
@@ -376,6 +378,8 @@
     <string name="home_waiting_near_you">Waiting for orders near you</string>
     <string name="home_waiting">Waiting for orders</string>
     <string name="home_go_offline">Slide to go offline</string>
+    <string name="home_going_online">Going online…</string>
+    <string name="home_going_offline">Going offline…</string>
     <string name="home_last_started">Last started from</string>
     <string name="home_started_from">Started from</string>
     <string name="home_change">Change</string>

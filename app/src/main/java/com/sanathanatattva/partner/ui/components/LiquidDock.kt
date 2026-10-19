@@ -63,6 +63,8 @@ import kotlin.math.roundToInt
 import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.launch
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 /**
  * Screens under the dock put a sheet up by calling [hideDock] while it shows; the dock
@@ -305,6 +307,7 @@ fun LiquidDock(
                         )
                     },
             ) {
+                val haptics = LocalHapticFeedback.current
                 items.forEachIndexed { i, item ->
                     // 1 when the pill is centred on this item, fading to 0 as it leaves.
                     val on = (1f - abs(pillPos - i)).coerceIn(0f, 1f)
@@ -324,7 +327,7 @@ fun LiquidDock(
                                 // pill at the target before the real one slides in.
                                 indication = null,
                                 role = Role.Tab,
-                                onClick = { onSelect(i) },
+                                onClick = { if (i != safeIndex) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick); onSelect(i) },
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,

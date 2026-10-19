@@ -78,6 +78,15 @@ class RingActivity : AppCompatActivity() {
         sound = AlertSound(this, getString(R.string.narration_locale))
         sound.ring()
         load(intent)
+        // The offer went elsewhere while ringing: stop, say so, close.
+        lifecycleScope.launch {
+            OfferEvents.closed.collect { closedId ->
+                if (closedId == offer?.id && !answering) {
+                    Toast.makeText(this@RingActivity, getString(R.string.ring_gone), Toast.LENGTH_LONG).show()
+                    finishWith(null)
+                }
+            }
+        }
 
         setContent {
             StTheme {
@@ -215,6 +224,16 @@ private fun RingLoading(problem: String?, onClose: () -> Unit) {
 object OrderAlert {
     const val NOTIFICATION_ID = 4201
 
+    /** The offer the ringing notification is for, so a closed offer only silences its own ring. */
+    @Volatile private var shownId: String? = null
+
+    fun cancelIf(context: Context, id: String) {
+        if (shownId == id) {
+            NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
+            shownId = null
+        }
+    }
+
     fun show(context: Context, id: String, forRider: Boolean, test: Boolean, summary: String? = null, expiresAt: Long? = null) {
         if (!canPostNotifications(context)) return
         OrderChannel.ensure(context)
@@ -245,5 +264,6 @@ object OrderAlert {
         // Ring until it's answered, like a phone call.
         notification.flags = notification.flags or Notification.FLAG_INSISTENT
         context.getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+        shownId = id
     }
 }

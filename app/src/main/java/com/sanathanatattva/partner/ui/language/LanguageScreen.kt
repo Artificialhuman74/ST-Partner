@@ -84,6 +84,8 @@ import com.sanathanatattva.partner.ui.theme.Anek
 import com.sanathanatattva.partner.ui.theme.AnekNarrow
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.launch
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 private enum class Lang(val tag: String) { Kannada("kn"), English("en") }
 
@@ -178,6 +180,7 @@ private fun LanguageCard(
     compact: Boolean,
     onSelect: () -> Unit,
 ) {
+    val haptics = LocalHapticFeedback.current
     val shape = RoundedCornerShape(24.dp)
     val border by animateColorAsState(if (selected) St.Green else St.LineSoft, tween(350, easing = OilEase), label = "border")
     val fill by animateColorAsState(if (selected) St.GreenWash else St.Paper, tween(350, easing = OilEase), label = "fill")
@@ -190,7 +193,7 @@ private fun LanguageCard(
             .clip(shape)
             .background(fill)
             .border(3.dp, border, shape)
-            .selectable(selected = selected, role = Role.RadioButton, onClick = onSelect)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick); onSelect() })
             .padding(start = 16.dp, end = 18.dp, top = if (compact) 10.dp else 16.dp, bottom = if (compact) 10.dp else 16.dp),
     ) {
         Box(

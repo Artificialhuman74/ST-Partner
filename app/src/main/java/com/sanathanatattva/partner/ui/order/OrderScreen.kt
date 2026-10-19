@@ -125,7 +125,7 @@ private fun RiderFlow(
     when {
         o.stage == "returning" -> ReturnToShopScreen(o, returned = false, onBack = onBack)
         o.stage == "rider_assigned" && leg == Leg.AtShop -> RiderPickupCodeScreen(o, vm, picked = false, onBack = { setLeg(Leg.Main) }, onGo = {})
-        o.stage == "rider_assigned" -> RiderToShopScreen(o, vm, onBack, onArrived = { setLeg(Leg.AtShop) })
+        o.stage == "rider_assigned" -> RiderToShopScreen(o, vm, onBack, onArrived = { vm.atShop(); setLeg(Leg.AtShop) })
         o.stage == "picked_up" && pickedAck -> RiderPickupCodeScreen(o, vm, picked = true, onBack = clearPicked, onGo = clearPicked)
         o.stage == "picked_up" -> Delivering(o, vm, rider = true, leg, setLeg, otp, setOtp, onBack)
         else -> BackTomorrowScreen(o, onBack)

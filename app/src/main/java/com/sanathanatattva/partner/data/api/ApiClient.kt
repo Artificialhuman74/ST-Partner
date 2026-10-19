@@ -23,6 +23,9 @@ object ApiClient {
         val client = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            // Upper bound for a whole request, so no button waits forever on a stalled connection.
+            .callTimeout(45, TimeUnit.SECONDS)
             .addInterceptor(auth)
             .apply {
                 if (BuildConfig.DEBUG) {

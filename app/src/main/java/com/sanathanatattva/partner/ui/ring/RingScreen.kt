@@ -76,6 +76,8 @@ import com.sanathanatattva.partner.ui.theme.AnekNarrow
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.delay
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 /** Full-screen ring for a new order (canvas "Ringing · trader" / "Ringing · rider"). */
 @Composable
@@ -149,8 +151,9 @@ fun RingScreen(offer: Offer, totalMs: Long, onHearAgain: () -> Unit, onAccept: (
 
         Column(Modifier.padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             SlideButton(label = stringResource(R.string.ring_slide_accept), onComplete = onAccept)
+            val haptics = LocalHapticFeedback.current
             OutlinedButton(
-                onClick = onDecline,
+                onClick = { haptics.performHapticFeedback(HapticFeedbackType.Reject); onDecline() },
                 border = BorderStroke(2.dp, St.Green),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = St.Green),
                 modifier = Modifier.fillMaxWidth().height(56.dp),

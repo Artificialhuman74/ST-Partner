@@ -313,12 +313,16 @@ private fun DayEditor(day: DayHours, index: Int, onChange: ((DayHours) -> DayHou
 @Composable
 private fun OpenSwitch(on: Boolean, onChange: (Boolean) -> Unit) {
     val reduce = LocalReduceMotion.current
+    val haptics = LocalHapticFeedback.current
     val knob by animateDpAsState(if (on) 24.dp else 4.dp, tween(if (reduce) 0 else 250, easing = OilEase), label = "k")
     val track by animateColorAsState(if (on) St.Green else St.Cream, tween(if (reduce) 0 else 250), label = "t")
     val edge by animateColorAsState(if (on) St.Green else St.FieldBorder, tween(if (reduce) 0 else 250), label = "e")
     Row(
         Modifier.heightIn(min = 44.dp).clip(RoundedCornerShape(22.dp))
-            .toggleable(value = on, role = Role.Switch, onValueChange = onChange)
+            .toggleable(value = on, role = Role.Switch, onValueChange = {
+                haptics.performHapticFeedback(if (it) HapticFeedbackType.ToggleOn else HapticFeedbackType.ToggleOff)
+                onChange(it)
+            })
             .padding(start = 10.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),

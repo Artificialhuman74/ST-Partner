@@ -54,6 +54,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -122,6 +124,16 @@ fun HomeScreen(
 
     val home = vm.home
     val user = session?.user
+    // Feel the switch: a confirm going online, a soft tick going offline, a buzz when it fails.
+    val haptics = LocalHapticFeedback.current
+    var wasOnline by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(home?.online) {
+        val now = home?.online ?: return@LaunchedEffect
+        val before = wasOnline
+        if (before != null && before != now) haptics.performHapticFeedback(if (now) HapticFeedbackType.Confirm else HapticFeedbackType.ToggleOff)
+        wasOnline = now
+    }
+    LaunchedEffect(vm.failed) { if (vm.failed) haptics.performHapticFeedback(HapticFeedbackType.Reject) }
     val readiness = vm.readiness
 
     Box(Modifier.fillMaxSize()) {
@@ -173,14 +185,24 @@ fun HomeScreen(
                             home = home,
                             here = vm.here,
                             compact = !readiness.ready,
+                            busy = vm.busy,
                             onGoOffline = vm::goOffline,
                         )
                     } else {
+                        // Home not loaded yet: load it first, so the slide never does nothing.
+                        val openPicker = {
+                            when {
+                                !readiness.ready -> onPermissions()
+                                vm.home == null -> vm.loadHomeThen { picking = true }
+                                else -> { vm.refreshHere(); picking = true }
+                            }
+                        }
                         OfflineCard(
                             lastFrom = home?.startedFrom?.place ?: home?.places?.firstOrNull { it.isDefault },
                             liveLast = home?.startedFrom?.kind == "live",
-                            onGoOnline = { if (readiness.ready) picking = true else onPermissions() },
-                            onChange = { if (readiness.ready) picking = true else onPermissions() },
+                            busy = vm.busy,
+                            onGoOnline = openPicker,
+                            onChange = openPicker,
                         )
                     }
                 }
@@ -200,7 +222,8 @@ fun HomeScreen(
         if (picking && home != null) {
             StartPlacePicker(
                 places = home.places,
-                here = vm.here,
+                // No fresh fix yet: the last position the phone reported still works for "here".
+                here = vm.here ?: home.live?.let { it.lat to it.lng },
                 busy = vm.busy,
                 onClose = { picking = false },
                 onPick = { start ->
@@ -212,7 +235,13 @@ fun HomeScreen(
         val autoOff = home != null && !home.online && home.autoOfflineAt != null && !vm.autoOfflineDismissed
         if (autoOff) {
             AutoOfflineSheet(
-                onGoOnline = { vm.autoOfflineDismissed = true; if (readiness.ready) picking = true else onPermissions() },
+                onGoOnline = {
+                    vm.autoOfflineDismissed = true
+                    when {
+                        !readiness.ready -> onPermissions()
+                        else -> { vm.refreshHere(); picking = true }
+                    }
+                },
                 onNotNow = { vm.autoOfflineDismissed = true },
             )
         }
@@ -244,7 +273,7 @@ private fun labelRes(label: String) = when (label) {
 }
 
 @Composable
-private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, onGoOnline: () -> Unit, onChange: () -> Unit) {
+private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, busy: Boolean, onGoOnline: () -> Unit, onChange: () -> Unit) {
     val shape = RoundedCornerShape(28.dp)
     Column(Modifier.fillMaxWidth().clip(shape).background(St.Paper).border(2.dp, St.LineSoft, shape).padding(20.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -255,14 +284,15 @@ private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, onGoOnline: () -> U
         Spacer(Modifier.height(18.dp))
         // "ho-knob" nudges 22px; "ho-chev" chevrons pulse in turn.
         SlideButton(
-            label = stringResource(R.string.home_go_online),
+            label = stringResource(if (busy) R.string.home_going_online else R.string.home_go_online),
             onComplete = onGoOnline,
             knobIcon = StIcons.Power,
             height = 80.dp,
             track = St.Sand,
             border = St.Line,
             nudge = 22.dp,
-            chevrons = true,
+            chevrons = !busy,
+            enabled = !busy,
         )
         if (lastFrom != null || liveLast) {
             Row(
@@ -290,7 +320,7 @@ private val Drop = svgPath("M15 1C15 1 3 17 3 26a12 12 0 0 0 24 0C27 17 15 1 15 
 private val Glint = svgPath("M10 21a2.6 5 0 1 0 0.01 0Z")
 
 @Composable
-private fun OnlineCard(home: PartnerHome?, here: Pair<Double, Double>?, compact: Boolean, onGoOffline: () -> Unit) {
+private fun OnlineCard(home: PartnerHome?, here: Pair<Double, Double>?, compact: Boolean, busy: Boolean, onGoOffline: () -> Unit) {
     val reduce = LocalReduceMotion.current
     // "hn-in": the card settles up 10px over 0.8s.
     val enter = remember { Animatable(if (reduce) 1f else 0f) }
@@ -317,8 +347,9 @@ private fun OnlineCard(home: PartnerHome?, here: Pair<Double, Double>?, compact:
         NearYouMap(center, Modifier.padding(top = if (compact) 8.dp else 12.dp).fillMaxWidth().height(if (compact) 110.dp else 150.dp))
         Spacer(Modifier.height(8.dp))
         SlideButton(
-            label = stringResource(R.string.home_go_offline),
+            label = stringResource(if (busy) R.string.home_going_offline else R.string.home_go_offline),
             onComplete = onGoOffline,
+            enabled = !busy,
             knobIcon = StIcons.Power,
             fromEnd = true,
             height = 80.dp,

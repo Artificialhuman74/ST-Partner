@@ -98,6 +98,9 @@ interface PartnerApi {
     @POST("api/partner/orders/{id}/start")
     suspend fun startDelivery(@Path("id") id: Long): OkResponse
 
+    @POST("api/partner/orders/{id}/at-shop")
+    suspend fun atShop(@Path("id") id: Long): OkResponse
+
     @POST("api/partner/orders/{id}/handover")
     suspend fun handover(@Path("id") id: Long, @Body body: CodeBody): OkResponse
 

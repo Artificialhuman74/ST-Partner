@@ -69,6 +69,8 @@ import com.sanathanatattva.partner.ui.components.viewBox
 import com.sanathanatattva.partner.ui.components.around
 import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import com.sanathanatattva.partner.ui.theme.St
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 /** A bottom sheet that rises 60px into place ("bk-sheet" / "ao-sheet"). */
 @Composable
@@ -190,9 +192,10 @@ private fun Option(
     val tile by animateColorAsState(if (selected) Color(0xFFDCEBD7) else St.Sand, tween(300, easing = OilEase), label = "t")
     val shape = RoundedCornerShape(22.dp)
     val gpsClock by rememberLoop(2000, still = 1f)
+    val haptics = LocalHapticFeedback.current
     Row(
         Modifier.fillMaxWidth().heightIn(min = 76.dp).clip(shape).background(bg).border(2.dp, border, shape)
-            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick).padding(12.dp),
+            .selectable(selected = selected, role = Role.RadioButton, onClick = { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick); onClick() }).padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {

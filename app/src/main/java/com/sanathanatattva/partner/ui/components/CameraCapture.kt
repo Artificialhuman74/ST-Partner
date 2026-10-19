@@ -62,6 +62,8 @@ import com.sanathanatattva.partner.ui.theme.St
 import java.io.File
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 enum class CameraGuide { Oval, Card, Corners }
 
@@ -88,6 +90,7 @@ fun CameraCapture(
     trigger: CameraTrigger? = null,
 ) {
     val context = LocalContext.current
+    val haptics = LocalHapticFeedback.current
     var granted by remember {
         mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
     }
@@ -152,6 +155,7 @@ fun CameraCapture(
                 val options = ImageCapture.OutputFileOptions.Builder(file)
                     .setMetadata(ImageCapture.Metadata().apply { isReversedHorizontal = front })
                     .build()
+                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
                 capture.takePicture(options, ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                         busy = false

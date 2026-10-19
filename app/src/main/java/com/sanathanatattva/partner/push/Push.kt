@@ -18,6 +18,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.sanathanatattva.partner.BuildConfig
 import com.sanathanatattva.partner.MainActivity
 import com.sanathanatattva.partner.R
+import com.sanathanatattva.partner.alerts.OfferEvents
+import com.sanathanatattva.partner.alerts.OnlineService
 import com.sanathanatattva.partner.alerts.OrderAlert
 import com.sanathanatattva.partner.appContainer
 import com.sanathanatattva.partner.data.SessionStore
@@ -64,7 +66,17 @@ object Channels {
                 NotificationManager.IMPORTANCE_HIGH,
             ).apply { description = context.getString(R.string.channel_account_body) },
         )
+        // "Pack this order", "Ravi is coming", "Picked up", "Delivered": the server sends these on orders_info.
+        manager.createNotificationChannel(
+            NotificationChannel(
+                ORDER_UPDATES,
+                context.getString(R.string.channel_updates_name),
+                NotificationManager.IMPORTANCE_HIGH,
+            ).apply { description = context.getString(R.string.channel_updates_body) },
+        )
     }
+
+    const val ORDER_UPDATES = "orders_info"
 }
 
 fun canPostNotifications(context: Context): Boolean =
@@ -83,6 +95,20 @@ class PartnerMessagingService : FirebaseMessagingService() {
      * this shows them when the app is open too, so "You're approved!" is never missed.
      */
     override fun onMessageReceived(message: RemoteMessage) {
+        when (message.data["type"]) {
+            "offer_closed" -> {
+                val id = message.data["offer_id"] ?: return
+                OrderAlert.cancelIf(this, id)
+                OfferEvents.close(id)
+                return
+            }
+            "auto_offline" -> {
+                // Three missed orders: the server set them offline; stop sharing location and say why.
+                OnlineService.stopOnline(this)
+                show(getString(R.string.home_auto_offline_title), getString(R.string.home_auto_offline_body), channel = getString(R.string.channel_account_id), data = message.data)
+                return
+            }
+        }
         if (message.data["type"] == "order_offer") {
             OrderAlert.show(
                 this,
@@ -96,13 +122,21 @@ class PartnerMessagingService : FirebaseMessagingService() {
         }
         val title = message.notification?.title ?: message.data["title"] ?: return
         val body = message.notification?.body ?: message.data["body"].orEmpty()
+        val channel = message.notification?.channelId?.takeIf { it == Channels.ORDER_UPDATES } ?: getString(R.string.channel_account_id)
+        show(title, body, channel, message.data, message.messageId)
+    }
+
+    /** Posts a notification; tapping it opens the app, straight on the order when it is about one. */
+    private fun show(title: String, body: String, channel: String, data: Map<String, String>, messageId: String? = null) {
         if (!canPostNotifications(this)) return
+        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        data["order_id"]?.toLongOrNull()?.let { intent.putExtra("type", data["type"]).putExtra("order_id", it.toString()) }
         val open = PendingIntent.getActivity(
-            this, 0,
-            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            this, (messageId ?: title).hashCode(),
+            intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
-        val notification = NotificationCompat.Builder(this, getString(R.string.channel_account_id))
+        val notification = NotificationCompat.Builder(this, channel)
             .setSmallIcon(R.drawable.ic_notification)
             .setColor(ContextCompat.getColor(this, R.color.notification_green))
             .setContentTitle(title)
@@ -113,6 +147,6 @@ class PartnerMessagingService : FirebaseMessagingService() {
             .setContentIntent(open)
             .build()
         @Suppress("MissingPermission")
-        NotificationManagerCompat.from(this).notify(message.messageId?.hashCode() ?: title.hashCode(), notification)
+        NotificationManagerCompat.from(this).notify(messageId?.hashCode() ?: title.hashCode(), notification)
     }
 }

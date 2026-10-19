@@ -21,6 +21,7 @@ class OrderRepository(private val api: PartnerApi) {
     suspend fun order(id: Long) = apiCall { api.order(id) }
     suspend fun packed(id: Long) = apiCall { api.packed(id) }
     suspend fun start(id: Long) = apiCall { api.startDelivery(id) }
+    suspend fun atShop(id: Long) = apiCall { api.atShop(id) }
     suspend fun handover(id: Long, code: String) = apiCall { api.handover(id, CodeBody(code)) }
     suspend fun returned(id: Long, code: String) = apiCall { api.returned(id, CodeBody(code)) }
     suspend fun fail(id: Long, reason: String, note: String?) = apiCall { api.failDelivery(id, FailBody(reason, note)) }

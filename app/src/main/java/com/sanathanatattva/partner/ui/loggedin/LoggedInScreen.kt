@@ -54,6 +54,8 @@ import com.sanathanatattva.partner.ui.components.viewBox
 import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.delay
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 private const val TOTAL_MS = 3300f
 private val Pour = CubicBezierEasing(0.3f, 0.1f, 0.2f, 1f)
@@ -67,9 +69,14 @@ fun LoggedInScreen(firstName: String, onDone: () -> Unit) {
     val reduceMotion = LocalReduceMotion.current
     val clock = remember { Animatable(if (reduceMotion) TOTAL_MS else 0f) }
     val surface by rememberLoop(1500)
+    val haptics = LocalHapticFeedback.current
     LaunchedEffect(Unit) {
         if (reduceMotion) delay(1200) else clock.animateTo(TOTAL_MS, tween(TOTAL_MS.toInt(), easing = LinearEasing))
         onDone()
+    }
+    LaunchedEffect(Unit) {
+        delay(if (reduceMotion) 0L else 1500L)
+        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
     }
     val t = clock.value
     Column(

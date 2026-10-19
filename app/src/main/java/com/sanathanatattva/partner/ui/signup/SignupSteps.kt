@@ -77,6 +77,8 @@ import com.sanathanatattva.partner.ui.components.StIcons
 import com.sanathanatattva.partner.ui.components.StTextField
 import com.sanathanatattva.partner.ui.theme.St
 import java.io.File
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 typealias Edit = ((SignupDraft) -> SignupDraft) -> Unit
 
@@ -301,6 +303,7 @@ private val PlateBlue = Color(0xFF1F4FA0)
 
 @Composable
 private fun VehicleTile(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    val haptics = LocalHapticFeedback.current
     val shape = RoundedCornerShape(24.dp)
     val border by animateColorAsState(if (selected) St.Green else St.LineSoft, label = "vb")
     val fill by animateColorAsState(if (selected) St.GreenWash else St.Paper, label = "vf")
@@ -310,7 +313,7 @@ private fun VehicleTile(icon: ImageVector, label: String, selected: Boolean, onC
             .clip(shape)
             .background(fill)
             .border(if (selected) 3.dp else 2.dp, border, shape)
-            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .selectable(selected = selected, role = Role.RadioButton, onClick = { if (!selected) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick); onClick() })
             .padding(12.dp),
     ) {
         Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -493,13 +496,17 @@ fun EmergencyStep(draft: SignupDraft, errors: Map<String, String>, onChange: Edi
             ) {
                 relations.forEach { (relation, label) ->
                     val on = draft.emergencyRelation == relation
+                    val haptics = LocalHapticFeedback.current
                     Box(
                         Modifier
                             .heightIn(min = 48.dp)
                             .clip(RoundedCornerShape(24.dp))
                             .background(if (on) St.Green else St.Paper)
                             .border(2.dp, if (on) St.Green else St.Line, RoundedCornerShape(24.dp))
-                            .selectable(selected = on, role = Role.RadioButton, onClick = { onChange { it.copy(emergencyRelation = relation) } })
+                            .selectable(selected = on, role = Role.RadioButton, onClick = {
+                                if (!on) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                onChange { it.copy(emergencyRelation = relation) }
+                            })
                             .padding(horizontal = 18.dp),
                         contentAlignment = Alignment.Center,
                     ) {

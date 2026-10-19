@@ -56,4 +56,7 @@
     <string name="stamp_refill_trader">ಹೊಸ ಡಬ್ಬ ಪ್ಯಾಕ್ ಮಾಡಬೇಡಿ</string>
     <string name="stamp_new_trader">ಹೊಸ ಡಬ್ಬ ಪ್ಯಾಕ್ ಮಾಡಿ</string>
     <string name="stamp_new_body">ಹೊಸ ಡಬ್ಬಕ್ಕೆ ಹಣ ಕೊಟ್ಟಿದ್ದಾರೆ</string>
+    <string name="order_complete">ಆರ್ಡರ್ ಪೂರ್ಣಗೊಳಿಸಿ</string>
+    <string name="home_going_online">ಆನ್‌ಲೈನ್ ಆಗುತ್ತಿದೆ…</string>
+    <string name="home_going_offline">ಆಫ್‌ಲೈನ್ ಆಗುತ್ತಿದೆ…</string>
 </resources>

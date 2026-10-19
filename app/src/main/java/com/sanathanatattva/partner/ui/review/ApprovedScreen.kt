@@ -53,6 +53,8 @@ import com.sanathanatattva.partner.ui.components.svgPath
 import com.sanathanatattva.partner.ui.components.viewBox
 import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import com.sanathanatattva.partner.ui.theme.St
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 private object Art {
     val ray = svgPath("M175 200L165 20h20z")
@@ -77,6 +79,11 @@ fun ApprovedScreen(firstName: String, onContinue: () -> Unit) {
     val reduce = LocalReduceMotion.current
     val intro = remember { Animatable(if (reduce) 1f else 0f) }
     LaunchedEffect(Unit) { intro.animateTo(1f, tween(1600, easing = LinearEasing)) }
+    val haptics = LocalHapticFeedback.current
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(if (reduce) 0L else 480L)
+        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+    }
     val spin by rememberLoop(48_000)
     val wave by rememberLoop(3200)
     val fall by rememberLoop(60_000)

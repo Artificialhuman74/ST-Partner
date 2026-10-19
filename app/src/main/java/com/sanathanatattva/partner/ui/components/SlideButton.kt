@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -92,6 +93,7 @@ fun SlideButton(
             .semantics(mergeDescendants = true) {
                 role = Role.Button
                 contentDescription = label
+                if (!enabled) disabled()
                 onClick(label) { if (enabled) { haptics.performHapticFeedback(HapticFeedbackType.Confirm); onComplete() }; true }
             },
     ) {
@@ -107,6 +109,20 @@ fun SlideButton(
         val hint = if (nudge.value > 0 && !reduce && !dragging && !done) {
             with(density) { nudge.toPx() } * kf(clock, 0f to 0f, 0.55f to 0f, 0.70f to 1f, 1f to 0f, easing = OilEase)
         } else 0f
+        // Safety net: whatever interrupts the finishing run (the screen changing under it, a
+        // cancelled gesture), the knob comes home and the slide works again.
+        LaunchedEffect(done) {
+            if (done) {
+                delay(1200)
+                done = false
+                armed = false
+                offset.snapTo(0f)
+            }
+        }
+        // Disabled mid-slide (e.g. busy): let go of it.
+        LaunchedEffect(enabled) {
+            if (!enabled && !done && offset.value > 0f) offset.animateTo(0f, tween(320, easing = OilEase))
+        }
         val chevronClock by rememberLoop(1600, still = 0.4f)
         Row(
             Modifier.fillMaxWidth().height(height).padding(start = if (fromEnd) 0.dp else knobSize + 8.dp, end = if (fromEnd) knobSize + 8.dp else 0.dp),

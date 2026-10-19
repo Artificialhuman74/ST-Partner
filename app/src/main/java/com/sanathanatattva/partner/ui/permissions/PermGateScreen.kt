@@ -88,6 +88,8 @@ import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.launch
 import com.sanathanatattva.partner.alerts.OnlineService
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 
 private data class PermRow(val check: AlertCheck, val icon: ImageVector, val title: Int, val why: Int)
 
@@ -117,6 +119,14 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
     }
     // Settings are changed outside the app: re-check every time the screen comes back.
     LifecycleResumeEffect(Unit) { refresh(); onPauseOrDispose { } }
+    val haptics = LocalHapticFeedback.current
+    var lastLeft by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(readiness.missing.size) {
+        val now = readiness.missing.size
+        val before = lastLeft
+        if (before != null && now < before) haptics.performHapticFeedback(if (now == 0) HapticFeedbackType.Confirm else HapticFeedbackType.ToggleOn)
+        lastLeft = now
+    }
 
     val askNotify = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         refresh()

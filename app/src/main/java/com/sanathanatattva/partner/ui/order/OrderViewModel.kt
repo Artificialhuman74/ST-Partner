@@ -136,6 +136,9 @@ class OrderViewModel(app: Application, saved: SavedStateHandle) : AndroidViewMod
     })
 
     fun startDelivery() = step(call = { container.orders.start(orderId) })
+
+    /** Lets the shop know the rider is there. Best-effort: the code screen opens either way. */
+    fun atShop() = viewModelScope.launch { container.orders.atShop(orderId) }
     fun handover(code: String, onWrong: () -> Unit) = codeStep({ container.orders.handover(orderId, code) }, onWrong)
     fun returned(code: String, onWrong: () -> Unit) = codeStep({ container.orders.returned(orderId, code) }, onWrong)
 
