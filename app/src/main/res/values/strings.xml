@@ -143,6 +143,12 @@
     <string name="signup_use_photo">Use this photo</string>
     <string name="signup_camera_needed">Allow the camera to take your photo.</string>
     <string name="signup_camera_allow">Allow camera</string>
+    <string name="camera_blocked">The camera is turned off for ST Partner. Turn it on in Settings → Permissions → Camera.</string>
+    <string name="camera_open_settings">Open settings</string>
+    <string name="camera_not_started">The camera didn’t start.</string>
+    <string name="camera_shot_failed">Couldn’t take the photo. Try again.</string>
+    <string name="camera_try_again">Try again</string>
+    <string name="camera_use_phone">Use phone camera instead</string>
     <string name="signup_vehicle_title">How will you deliver?</string>
     <string name="signup_vehicle_body">Pick one. You can change it later.</string>
     <string name="signup_vehicle_walk">Walking</string>

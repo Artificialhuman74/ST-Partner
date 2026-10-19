@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Photos taken with the phone's own camera app (fallback when the in-app preview won't start)
+     go where the in-app camera saves them: the cache (door, pickup) or files/signup (ID photos). -->
+<paths>
+    <cache-path name="photos" path="." />
+    <files-path name="signup" path="signup/" />
+</paths>

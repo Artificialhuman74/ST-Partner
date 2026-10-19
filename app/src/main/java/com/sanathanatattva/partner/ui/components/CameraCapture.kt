@@ -7,6 +7,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.sanathanatattva.partner.ui.theme.LocalReduceMotion
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.provider.Settings
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import kotlinx.coroutines.delay
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -98,10 +112,36 @@ fun CameraCapture(
 ) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
-    var granted by remember {
-        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+    fun hasCamera() = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+    var granted by remember { mutableStateOf(hasCamera()) }
+    // Denied with "don't ask again": the system dialog no longer shows, so the button opens Settings.
+    var blocked by remember { mutableStateOf(false) }
+    val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+        granted = ok
+        val activity = context.findActivity()
+        blocked = !ok && activity != null &&
+            !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)
     }
-    val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted = it }
+    // Back from Settings (or anywhere): pick up a permission granted meanwhile.
+    LifecycleResumeEffect(Unit) {
+        if (!granted && hasCamera()) granted = true
+        onPauseOrDispose { }
+    }
+
+    // The phone's own camera app: the way out when this preview won't start.
+    var phoneShot by remember { mutableStateOf<File?>(null) }
+    val phoneCamera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
+        val file = phoneShot
+        phoneShot = null
+        if (file != null) { if (ok && file.length() > 0) onCaptured(file) else file.delete() }
+    }
+    val usePhoneCamera = {
+        val file = newFile()
+        phoneShot = file
+        runCatching { phoneCamera.launch(FileProvider.getUriForFile(context, "${context.packageName}.files", file)) }
+            .onFailure { Log.e(TAG, "phone camera unavailable", it); phoneShot = null; file.delete() }
+        Unit
+    }
 
     Box(modifier.clip(RoundedCornerShape(28.dp)).background(St.Ink)) {
         if (!granted) {
@@ -111,8 +151,21 @@ fun CameraCapture(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(StIcons.Camera, contentDescription = null, tint = St.Cream, modifier = Modifier.size(40.dp))
-                Text(stringResource(R.string.signup_camera_needed), color = St.Cream, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-                PrimaryButton(text = stringResource(R.string.signup_camera_allow), arrow = false, onClick = { ask.launch(Manifest.permission.CAMERA) })
+                Text(
+                    stringResource(if (blocked) R.string.camera_blocked else R.string.signup_camera_needed),
+                    color = St.Cream, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center,
+                )
+                PrimaryButton(
+                    text = stringResource(if (blocked) R.string.camera_open_settings else R.string.signup_camera_allow),
+                    arrow = false,
+                    onClick = {
+                        if (blocked) {
+                            context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:${context.packageName}".toUri()))
+                        } else {
+                            ask.launch(Manifest.permission.CAMERA)
+                        }
+                    },
+                )
             }
             return@Box
         }
@@ -120,27 +173,49 @@ fun CameraCapture(
         val lifecycle = LocalLifecycleOwner.current
         val capture = remember { ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build() }
         var busy by remember { mutableStateOf(false) }
+        var shotFailed by remember { mutableStateOf(false) }
+        // Bumped to start the camera again (watchdog, or "Try again").
+        var attempt by remember { mutableIntStateOf(0) }
+        var streaming by remember { mutableStateOf(false) }
+        var stuck by remember { mutableStateOf(false) }
         val previewView = remember {
             PreviewView(context).apply {
                 scaleType = PreviewView.ScaleType.FILL_CENTER
                 implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             }
         }
-        DisposableEffect(front, lifecycle) {
+        DisposableEffect(previewView) {
+            val watch = Observer<PreviewView.StreamState> { streaming = it == PreviewView.StreamState.STREAMING }
+            previewView.previewStreamState.observeForever(watch)
+            onDispose { previewView.previewStreamState.removeObserver(watch) }
+        }
+        DisposableEffect(front, lifecycle, attempt) {
+            Log.d(TAG, "binding #$attempt (lifecycle=${lifecycle.lifecycle.currentState})")
             val future = ProcessCameraProvider.getInstance(context)
             var provider: ProcessCameraProvider? = null
             future.addListener({
-                provider = future.get().also { p ->
+                runCatching {
+                    val p = future.get()
+                    provider = p
                     val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
                     val selector = if (front) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
-                    runCatching {
-                        p.unbindAll()
-                        p.bindToLifecycle(lifecycle, selector, preview, capture)
-                    }
-                }
+                    p.unbindAll()
+                    p.bindToLifecycle(lifecycle, selector, preview, capture)
+                }.onFailure { Log.e(TAG, "camera didn't start", it) }
             }, ContextCompat.getMainExecutor(context))
             onDispose { provider?.unbindAll() }
         }
+        // Watchdog: a preview that hasn't shown a frame in a few seconds is restarted once
+        // (the same thing leaving the app and coming back did), then the partner is told.
+        LaunchedEffect(attempt) {
+            stuck = false
+            delay(START_TIMEOUT_MS)
+            if (!streaming) {
+                Log.w(TAG, "no preview after ${START_TIMEOUT_MS}ms (attempt $attempt)")
+                if (attempt == 0) attempt++ else stuck = true
+            }
+        }
+        LaunchedEffect(streaming) { if (streaming) stuck = false }
 
         AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
         GuideOverlay(guide, Modifier.fillMaxSize())
@@ -157,6 +232,7 @@ fun CameraCapture(
         val shoot: () -> Unit = {
             if (!busy) {
                 busy = true
+                shotFailed = false
                 trigger?.busy = true
                 val file = newFile()
                 val options = ImageCapture.OutputFileOptions.Builder(file)
@@ -171,9 +247,12 @@ fun CameraCapture(
                     }
 
                     override fun onError(exception: ImageCaptureException) {
+                        Log.e(TAG, "photo failed", exception)
                         busy = false
                         trigger?.busy = false
                         file.delete()
+                        shotFailed = true
+                        haptics.performHapticFeedback(HapticFeedbackType.Reject)
                     }
                 })
             }
@@ -182,7 +261,15 @@ fun CameraCapture(
             trigger?.fire = shoot
             onDispose { trigger?.fire = null }
         }
-        if (trigger == null) Box(
+        if (stuck || shotFailed) {
+            CameraTrouble(
+                message = stringResource(if (stuck) R.string.camera_not_started else R.string.camera_shot_failed),
+                onRetry = { shotFailed = false; if (stuck) attempt++ },
+                onPhoneCamera = usePhoneCamera,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        if (trigger == null && !stuck) Box(
             Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 18.dp)
@@ -200,6 +287,36 @@ fun CameraCapture(
         }
     }
 }
+
+/** Shown over the camera box when the preview won't start or a shot failed: try again, or the phone's camera app. */
+@Composable
+private fun CameraTrouble(message: String, onRetry: () -> Unit, onPhoneCamera: () -> Unit, modifier: Modifier) {
+    Column(
+        modifier.background(St.Ink.copy(alpha = 0.88f)).padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(StIcons.Camera, contentDescription = null, tint = St.Cream, modifier = Modifier.size(40.dp))
+        Text(message, color = St.Cream, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        PrimaryButton(text = stringResource(R.string.camera_try_again), arrow = false, onClick = onRetry)
+        Text(
+            stringResource(R.string.camera_use_phone),
+            color = St.Cream,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.clip(RoundedCornerShape(14.dp)).clickable(role = Role.Button, onClick = onPhoneCamera)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        )
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+private const val TAG = "STCamera"
+private const val START_TIMEOUT_MS = 3_000L
 
 /**
  * Dims everything outside the guide shape and outlines it. The selfie oval is the canvas's
