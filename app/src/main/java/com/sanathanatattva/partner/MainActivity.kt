@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.sanathanatattva.partner.alerts.OpenOrder
+import com.sanathanatattva.partner.ui.shop.ShopLink
 import com.sanathanatattva.partner.ui.nav.StNavHost
 import com.sanathanatattva.partner.ui.theme.St
 import com.sanathanatattva.partner.ui.theme.StTheme
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         OpenOrder.from(intent)
+        ShopLink.from(intent)
         setContent {
             StTheme {
                 StNavHost(Modifier.fillMaxSize().background(St.Cream))
@@ -32,5 +34,6 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         OpenOrder.from(intent)
+        ShopLink.from(intent)
     }
 }

@@ -39,6 +39,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -89,8 +91,10 @@ import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.delay
 import com.sanathanatattva.partner.alerts.RingActivity
 import com.sanathanatattva.partner.data.api.OrderCard
+import com.sanathanatattva.partner.ui.tour.TourStep
+import com.sanathanatattva.partner.ui.tour.tourTarget
 
-enum class HomeTab { Home, Earnings, Profile }
+enum class HomeTab { Home, MyShop, Earnings, Profile }
 
 /** Home for traders and approved riders (canvas "Home · offline / online", "a permission got turned off", "Auto-offline"). */
 @Composable
@@ -99,11 +103,14 @@ fun HomeScreen(
     onPermissions: () -> Unit,
     onTab: (HomeTab) -> Unit,
     onOpenOrder: (Long) -> Unit,
+    onAskStock: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val vm: HomeViewModel = viewModel()
     val session by context.appContainer.sessions.session.collectAsState(initial = context.appContainer.sessions.latest)
     var picking by rememberSaveable { mutableStateOf(false) }
+    val homeScope = rememberCoroutineScope()
+    val shop by context.appContainer.shop.state.collectAsState()
     val signOutHaptics = LocalHapticFeedback.current
     LifecycleResumeEffect(Unit) {
         // Session expired: a double buzz as it goes back to login.
@@ -114,7 +121,10 @@ fun HomeScreen(
             repo.wantsToGoOnline = false
             if (vm.home?.online != true) picking = true
         }
-        onPauseOrDispose { }
+        // Shop partners: keep "N shop products running low" (and the dock's count) current.
+        val user = context.appContainer.sessions.latest?.user
+        val shopJob = if (user != null && !user.isRider) homeScope.launch { context.appContainer.shop.refreshIfStale(user.tier == 1) } else null
+        onPauseOrDispose { shopJob?.cancel() }
     }
     // Keep the "near you" dot honest while online.
     LaunchedEffect(vm.home?.online) {
@@ -181,6 +191,7 @@ fun HomeScreen(
                     targetState = home?.online == true,
                     transitionSpec = { fadeIn(tween(400)) togetherWith fadeOut(tween(200)) },
                     label = "online",
+                    modifier = Modifier.tourTarget("status"),
                 ) { online ->
                     if (online) {
                         OnlineCard(
@@ -203,6 +214,7 @@ fun HomeScreen(
                             lastFrom = home?.startedFrom?.place ?: home?.places?.firstOrNull { it.isDefault },
                             liveLast = home?.startedFrom?.kind == "live",
                             busy = vm.busy,
+                            picking = picking,
                             onGoOnline = openPicker,
                             onChange = openPicker,
                         )
@@ -211,10 +223,15 @@ fun HomeScreen(
                 if (vm.failed) {
                     Text(stringResource(vm.failedMessage), color = St.Brick, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))
                 }
+                // Canvas "Delivery Home · stock banner": one line, only when the shop needs stock.
+                if (user?.isRider == false && shop.attention.isNotEmpty()) {
+                    Spacer(Modifier.height(12.dp))
+                    StockBanner(shop.attention.size, shop.attention.first(), onAskStock)
+                }
                 Spacer(Modifier.height(12.dp))
                 when {
                     home?.online == true && readiness.ready -> KeepNotificationTip()
-                    home?.online != true -> AlertsRow(readiness.missing.size, onPermissions)
+                    home?.online != true -> AlertsRow(readiness.missing.size, onPermissions, Modifier.tourTarget("bar"))
                 }
                 Spacer(Modifier.height(12.dp))
                 TodayCard(home?.today?.deliveries ?: 0, home?.today?.earned ?: 0.0, gold = home?.online != true, onAll = { onTab(HomeTab.Earnings) })
@@ -251,6 +268,24 @@ fun HomeScreen(
 }
 
 @Composable
+private fun StockBanner(count: Int, worst: com.sanathanatattva.partner.data.api.InventoryItem, onAsk: () -> Unit) {
+    val shape = RoundedCornerShape(24.dp)
+    Row(
+        Modifier.fillMaxWidth().clip(shape).background(St.GoldGlint).border(2.dp, St.GoldPale, shape).clickable(onClick = onAsk)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        com.sanathanatattva.partner.ui.shop.MiniShelf(listOf(worst), height = 44.dp, plank = 0.dp)
+        Column(Modifier.weight(1f)) {
+            Text(pluralStringResource(R.plurals.home_stock_low, count, count), style = MaterialTheme.typography.titleMedium.copy(fontSize = 19.sp, fontWeight = FontWeight.Bold), color = St.Ink)
+            Text(stringResource(R.string.shop_ask), style = MaterialTheme.typography.labelMedium.copy(fontSize = 17.sp, fontWeight = FontWeight.Bold), color = St.Green)
+        }
+        Icon(StIcons.ChevronRight, contentDescription = null, tint = St.Green, modifier = Modifier.size(24.dp))
+    }
+}
+
+@Composable
 private fun Header(name: String, subtitle: String, onSupport: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Box(
@@ -262,7 +297,7 @@ private fun Header(name: String, subtitle: String, onSupport: () -> Unit) {
             if (subtitle.isNotBlank()) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = St.Ink2)
         }
         Box(
-            Modifier.size(48.dp).clip(CircleShape).background(St.Sand).clickable(onClick = onSupport),
+            Modifier.tourTarget("help", makeRoomOn = TourStep.Help).size(48.dp).clip(CircleShape).background(St.Sand).clickable(onClick = onSupport),
             contentAlignment = Alignment.Center,
         ) { Icon(StIcons.Headset, contentDescription = stringResource(R.string.call_support), tint = St.Green, modifier = Modifier.size(24.dp)) }
     }
@@ -275,7 +310,7 @@ private fun labelRes(label: String) = when (label) {
 }
 
 @Composable
-private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, busy: Boolean, onGoOnline: () -> Unit, onChange: () -> Unit) {
+private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, busy: Boolean, picking: Boolean, onGoOnline: () -> Unit, onChange: () -> Unit) {
     val shape = RoundedCornerShape(28.dp)
     Column(Modifier.fillMaxWidth().clip(shape).background(St.Paper).border(2.dp, St.LineSoft, shape).padding(20.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -288,6 +323,7 @@ private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, busy: Boolean, onGo
         SlideButton(
             label = stringResource(if (busy) R.string.home_going_online else R.string.home_go_online),
             onComplete = onGoOnline,
+            modifier = Modifier.tourTarget("slider", makeRoomOn = TourStep.Online),
             knobIcon = StIcons.Power,
             height = 80.dp,
             track = St.Sand,
@@ -295,6 +331,8 @@ private fun OfflineCard(lastFrom: Place?, liveLast: Boolean, busy: Boolean, onGo
             nudge = 22.dp,
             chevrons = !busy,
             enabled = !busy,
+            // The knob waits at the end while the place picker is open, and slides home if it's closed.
+            held = picking || busy,
         )
         if (lastFrom != null || liveLast) {
             Row(
@@ -351,7 +389,9 @@ private fun OnlineCard(home: PartnerHome?, here: Pair<Double, Double>?, compact:
         SlideButton(
             label = stringResource(if (busy) R.string.home_going_offline else R.string.home_go_offline),
             onComplete = onGoOffline,
+            modifier = Modifier.tourTarget("slider_off", makeRoomOn = TourStep.Online),
             enabled = !busy,
+            held = busy,
             knobIcon = StIcons.Power,
             fromEnd = true,
             height = 80.dp,
@@ -462,10 +502,10 @@ private fun KeepNotificationTip() {
 }
 
 @Composable
-private fun AlertsRow(missing: Int, onOpen: () -> Unit) {
+private fun AlertsRow(missing: Int, onOpen: () -> Unit, modifier: Modifier = Modifier) {
     val ready = missing == 0
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 52.dp).clip(RoundedCornerShape(18.dp))
+        modifier.fillMaxWidth().heightIn(min = 52.dp).clip(RoundedCornerShape(18.dp))
             .background(if (ready) St.GreenWash else St.Gold).clickable(onClick = onOpen).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),

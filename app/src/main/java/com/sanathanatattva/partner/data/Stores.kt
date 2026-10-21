@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.sanathanatattva.partner.data.api.User
 import com.sanathanatattva.partner.data.api.apiJson
@@ -28,6 +29,7 @@ class SettingsStore(private val context: Context) {
         val languageChosen = booleanPreferencesKey("language_chosen")
         val introSeen = booleanPreferencesKey("intro_seen")
         val voiceOn = booleanPreferencesKey("voice_on")
+        val tourSeen = stringSetPreferencesKey("tour_seen")
     }
 
     val settings: Flow<Settings> = context.settingsData.data.map {
@@ -43,6 +45,10 @@ class SettingsStore(private val context: Context) {
     suspend fun setLanguageChosen() = context.settingsData.edit { it[Keys.languageChosen] = true }
     suspend fun setIntroSeen() = context.settingsData.edit { it[Keys.introSeen] = true }
     suspend fun setVoiceOn(on: Boolean) = context.settingsData.edit { it[Keys.voiceOn] = on }
+
+    /** The welcome tour plays once per account on this phone. */
+    suspend fun tourSeen(userId: Long): Boolean = context.settingsData.data.first()[Keys.tourSeen].orEmpty().contains(userId.toString())
+    suspend fun setTourSeen(userId: Long) = context.settingsData.edit { it[Keys.tourSeen] = it[Keys.tourSeen].orEmpty() + userId.toString() }
 }
 
 data class Session(val token: String, val user: User)

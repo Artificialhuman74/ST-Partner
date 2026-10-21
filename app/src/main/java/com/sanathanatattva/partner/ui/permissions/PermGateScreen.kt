@@ -1,5 +1,16 @@
 package com.sanathanatattva.partner.ui.permissions
 
+import com.sanathanatattva.partner.ui.tour.LocalTour
+import com.sanathanatattva.partner.ui.tour.TourStep
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.delay
+import com.sanathanatattva.partner.ui.tour.tourTarget
+
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.os.Build
@@ -107,6 +118,7 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var readiness by remember { mutableStateOf(AlertReadiness.check(context)) }
+    var autostartDone by remember { mutableStateOf(Autostart.confirmed(context)) }
     var note by remember { mutableStateOf<String?>(null) }
     // Opened from Profile while online, the button just confirms instead of offering to go online again.
     var online by remember { mutableStateOf(context.appContainer.partner.lastHome?.online == true || OnlineService.running.value) }
@@ -115,10 +127,12 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
     }
     fun refresh() {
         readiness = AlertReadiness.check(context)
+        autostartDone = Autostart.confirmed(context)
         OrderChannel.ensure(context)
     }
     // Settings are changed outside the app: re-check every time the screen comes back.
     LifecycleResumeEffect(Unit) { refresh(); onPauseOrDispose { } }
+    val tour = LocalTour.current
     val haptics = LocalHapticFeedback.current
     var lastLeft by remember { mutableStateOf<Int?>(null) }
     LaunchedEffect(readiness.missing.size) {
@@ -153,6 +167,19 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
 
     val left = readiness.missing.size
     val guide = remember { Autostart.guideFor() }
+    val autostartShown = guide != null && !autostartDone
+    // The welcome tour follows along: its spotlight sits on the next "Turn on", and on the
+    // phone maker's Autostart link right after Battery when this phone has one.
+    val tourKey = rows.firstNotNullOfOrNull { row ->
+        when {
+            row.check in readiness.missing -> "turnon_${row.check.name}"
+            row.check == AlertCheck.Battery && autostartShown -> "autostart"
+            else -> null
+        }
+    }
+    LaunchedEffect(readiness, tourKey) { tour.reportChecklist(readiness.missing, tourKey) }
+    val scroll = rememberScrollState()
+    val density = LocalDensity.current
     val testSent = stringResource(R.string.perm_test_sent)
     val testFailed = stringResource(R.string.error_network)
 
@@ -168,7 +195,7 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
                 color = if (left == 0) St.Green else St.GoldInk,
             )
         }
-        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+        Column(Modifier.weight(1f).verticalScroll(scroll)) {
             Text(
                 if (left == 0) stringResource(if (online) R.string.perm_ready_online else R.string.perm_ready) else pluralStringResource(R.plurals.perm_left, left, left),
                 style = MaterialTheme.typography.headlineMedium.copy(fontSize = 30.sp),
@@ -178,12 +205,24 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
             Text(stringResource(R.string.perm_body), style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp), color = St.Ink2, modifier = Modifier.padding(top = 6.dp))
             Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 rows.forEach { row ->
+                    // During the tour, the row it points at scrolls up clear of the tour's card.
+                    val requester = remember { BringIntoViewRequester() }
+                    var rowHeight by remember { mutableIntStateOf(0) }
+                    val pointedAt = tour.step == TourStep.Checklist && (tourKey == "turnon_${row.check.name}" || (tourKey == "autostart" && row.check == AlertCheck.Battery))
+                    LaunchedEffect(pointedAt, rowHeight) {
+                        if (pointedAt && rowHeight > 0) {
+                            delay(150)
+                            val room = with(density) { 300.dp.toPx() }
+                            requester.bringIntoView(Rect(0f, -with(density) { 24.dp.toPx() }, 1f, rowHeight + room))
+                        }
+                    }
                     PermCard(
                         row = row,
                         on = row.check in readiness.on,
                         onTurnOn = { turnOn(row.check) },
-                        autostart = if (row.check == AlertCheck.Battery && guide != null && !Autostart.confirmed(context)) guide.brand else null,
+                        autostart = if (row.check == AlertCheck.Battery && autostartShown) guide?.brand else null,
                         onAutostart = onAutostartGuide,
+                        modifier = Modifier.bringIntoViewRequester(requester).onSizeChanged { rowHeight = it.height },
                     )
                 }
             }
@@ -214,14 +253,14 @@ fun PermGateScreen(onBack: () -> Unit, onReady: (alreadyOnline: Boolean) -> Unit
 }
 
 @Composable
-private fun PermCard(row: PermRow, on: Boolean, onTurnOn: () -> Unit, autostart: String?, onAutostart: () -> Unit) {
+private fun PermCard(row: PermRow, on: Boolean, onTurnOn: () -> Unit, autostart: String?, onAutostart: () -> Unit, modifier: Modifier = Modifier) {
     // "pg-card": colours ease over 0.4s when a setting turns on.
     val border by animateColorAsState(if (on) Color(0xFFB9D3B4) else St.LineSoft, tween(400, easing = OilEase), label = "b")
     val bg by animateColorAsState(if (on) Color(0xFFF3F8F1) else St.Paper, tween(400, easing = OilEase), label = "bg")
     val tile by animateColorAsState(if (on) Color(0xFFDCEBD7) else St.Sand, tween(400, easing = OilEase), label = "t")
     val shape = RoundedCornerShape(20.dp)
     Column(
-        Modifier.fillMaxWidth().clip(shape).background(bg).border(2.dp, border, shape).padding(start = 12.dp, end = 10.dp, top = 12.dp, bottom = 12.dp),
+        modifier.fillMaxWidth().clip(shape).background(bg).border(2.dp, border, shape).padding(start = 12.dp, end = 10.dp, top = 12.dp, bottom = 12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -247,14 +286,14 @@ private fun PermCard(row: PermRow, on: Boolean, onTurnOn: () -> Unit, autostart:
                         onClick = onTurnOn,
                         colors = ButtonDefaults.buttonColors(containerColor = St.Green, contentColor = St.Cream),
                         shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier.height(48.dp),
+                        modifier = Modifier.tourTarget("turnon_${row.check.name}").height(48.dp),
                     ) { Text(stringResource(R.string.perm_turn_on), style = MaterialTheme.typography.titleMedium.copy(fontSize = 17.sp, fontWeight = FontWeight.Bold)) }
                 }
             }
         }
         if (autostart != null) {
             Row(
-                Modifier.padding(start = 58.dp).fillMaxWidth().heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp)).background(St.Gold).clickable(onClick = onAutostart).padding(horizontal = 12.dp),
+                Modifier.padding(start = 58.dp).tourTarget("autostart").fillMaxWidth().heightIn(min = 40.dp).clip(RoundedCornerShape(12.dp)).background(St.Gold).clickable(onClick = onAutostart).padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {

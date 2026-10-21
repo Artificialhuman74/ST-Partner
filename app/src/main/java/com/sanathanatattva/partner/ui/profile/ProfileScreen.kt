@@ -59,7 +59,7 @@ import com.sanathanatattva.partner.ui.login.dialSupport
 import com.sanathanatattva.partner.ui.theme.St
 import kotlinx.coroutines.launch
 
-enum class ProfileLink { StartPlaces, DeliveryHours, Vehicle, Payout, Language, Alerts, RiderJobs, ContainerPickups, Edit }
+enum class ProfileLink { StartPlaces, DeliveryHours, Vehicle, Payout, Language, Alerts, RiderJobs, ContainerPickups, Edit, Tour }
 
 /** Profile (canvas "Profile"): tiles for the partner's own settings. Traders and riders see different tiles. */
 @Composable
@@ -149,6 +149,7 @@ fun ProfileScreen(onOpen: (ProfileLink) -> Unit, onLoggedOut: () -> Unit) {
                 RowLink(StIcons.Scooter, stringResource(R.string.profile_rider_jobs), stringResource(R.string.profile_rider_jobs_body)) { onOpen(ProfileLink.RiderJobs) }
                 RowLink(StIcons.CanNew, stringResource(R.string.profile_pickups), null) { onOpen(ProfileLink.ContainerPickups) }
             }
+            RowLink(StIcons.Hand, stringResource(R.string.profile_tour), null) { onOpen(ProfileLink.Tour) }
             RowLink(StIcons.Headset, stringResource(R.string.profile_support), null) { context.dialSupport() }
             RowLink(StIcons.ArrowLeft, stringResource(R.string.profile_log_out), null, danger = true) {
                 // Logging out settles softly (design canvas "Haptics").

@@ -30,10 +30,12 @@
 
         <!-- Predictive back is off: the phone's Back button made the page shrink into a card
              before popping. Back now plays the same fade as the on-screen arrow.
-             configChanges: a language switch recomposes in place instead of restarting the screen. -->
+             configChanges: a language switch recomposes in place instead of restarting the screen.
+             It changes the locale, the layout direction and the screen layout (whose bits carry
+             the direction); missing any one of them restarts the activity, a blank flash. -->
         <activity
             android:name=".MainActivity"
-            android:configChanges="locale|layoutDirection"
+            android:configChanges="locale|layoutDirection|screenLayout"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.STPartner.Starting"
@@ -75,6 +77,9 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <receiver
+            android:name=".push.DismissReceiver"
+            android:exported="false" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_account_id" />

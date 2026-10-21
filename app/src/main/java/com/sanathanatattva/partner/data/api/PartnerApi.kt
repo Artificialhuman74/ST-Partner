@@ -142,6 +142,49 @@ interface PartnerApi {
         @Part photo: MultipartBody.Part?,
     ): ResolveResponse
 
+    // A shop partner's own shop: the website's trader routes (backend/src/routes/trader.js)
+    @GET("api/trader/profile")
+    suspend fun traderProfile(): TraderProfileResponse
+
+    @GET("api/trader/inventory")
+    suspend fun inventory(): InventoryResponse
+
+    @PUT("api/trader/inventory/{productId}/threshold")
+    suspend fun setAlertLevel(@Path("productId") productId: Long, @Body body: ThresholdBody): SuccessResponse
+
+    @GET("api/trader/products")
+    suspend fun catalog(): CatalogResponse
+
+    @GET("api/trader/orders")
+    suspend fun restockOrders(): RestockOrdersResponse
+
+    @GET("api/trader/orders/{id}")
+    suspend fun restockOrder(@Path("id") id: Long): RestockOrderDetail
+
+    @POST("api/trader/orders")
+    suspend fun askForStock(@Body body: RestockBody): RestockCreated
+
+    @GET("api/trader/consumer-orders")
+    suspend fun customerOrders(): CustomerOrdersResponse
+
+    @GET("api/trader/commissions")
+    suspend fun commissions(): CommissionsResponse
+
+    @GET("api/trader/sub-dealers")
+    suspend fun subDealers(): SubDealersResponse
+
+    @GET("api/trader/sub-dealers/{id}/inventory")
+    suspend fun subDealerInventory(@Path("id") id: Long): InventoryResponse
+
+    @GET("api/trader/referral")
+    suspend fun referral(): ReferralResponse
+
+    @GET("api/trader/admin-contact")
+    suspend fun adminContact(): AdminContact
+
+    @GET("api/lucky-draw/trader/enrollments")
+    suspend fun luckyDraw(): EnrollmentsResponse
+
     @GET("api/auth/me")
     suspend fun me(): MeResponse
 

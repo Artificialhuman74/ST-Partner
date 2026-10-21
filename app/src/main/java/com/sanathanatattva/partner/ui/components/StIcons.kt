@@ -91,6 +91,16 @@ object StIcons {
     val DoubleChevronLeft by lazy { line("double_chevron_left", 3f, "M20 6l-6 6 6 6", "M12 6l-6 6 6 6") }
     val Rupee by lazy { line("rupee", 2.2f, "M6 3h12", "M6 8h12", "M6 13h3", "M9 13c6.667 0 6.667-10 0-10", "M6 13l8.5 8") }
 
+    // My Shop (canvas "ST Delivery · My Shop")
+    val WhatsApp by lazy { line("whatsapp", 1.9f, "M3.5 20.5l1.4-4.1A8.5 8.5 0 1 1 8 19.3z", "M9 9.5c.3 2.3 2.2 4.3 4.6 4.8l1.2-1.3 1.9.9-.3 1.6c-3.9.3-8-3.6-7.8-7.4l1.6-.4.9 1.9z") }
+    val Store by lazy { line("store", 1.9f, "M4 9h16l-1.6-5H5.6z", "M5 9v11h14V9", "M10 20v-5h4v5") }
+    val Truck by lazy { line("truck", 1.9f, "M2.5 6.5h11v10h-11z", "M13.5 9.5h4l3 3.2v3.8h-7", "M4.5 17.5a2 2 0 1 0 4 0a2 2 0 1 0-4 0", "M14.5 17.5a2 2 0 1 0 4 0a2 2 0 1 0-4 0") }
+    val People by lazy { line("people", 1.9f, "M5.5 8a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0", "M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5", "M14.5 9a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0", "M16.5 14.6c2.8.2 5 1.8 5 4.9") }
+    val Minus by lazy { line("minus", 2.4f, "M5 12h14") }
+    val Share by lazy { line("share", 2f, "M15.5 5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0", "M3.5 12a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0", "M15.5 19a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0", "M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4") }
+    val Trophy by lazy { line("trophy", 2f, "M7 4h10v4a5 5 0 0 1-10 0z", "M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4", "M12 13v4M8 21h8M9.5 17h5") }
+    val WifiOff by lazy { line("wifi_off", 2f, "M2 8.5a15 15 0 0 1 5-3M22 8.5A15 15 0 0 0 11 4.6M5 12a10 10 0 0 1 3.5-2.2M19 12a10 10 0 0 0-4-2.4M8.5 15.5a5 5 0 0 1 7 0", "M11 19a1 1 0 1 0 2 0a1 1 0 1 0-2 0", "M3 3l18 18") }
+
     private fun line(name: String, width: Float, vararg paths: String): ImageVector = line(name, width, 24f, *paths)
 
     private fun line(name: String, width: Float, viewport: Float, vararg paths: String): ImageVector =

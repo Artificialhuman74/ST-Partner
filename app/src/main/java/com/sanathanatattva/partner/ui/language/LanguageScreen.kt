@@ -98,6 +98,18 @@ private const val SAVED_HOLD_MS = 650L
 /** First-run language picker (canvas "Language"). Choosing switches the whole app, voice included. */
 @Composable
 fun LanguageScreen(onDone: () -> Unit) {
+    // The language changes behind the "saved" tick, while this page is still showing. Kannada
+    // and English use different line heights, so the page would jump as the theme swaps; it
+    // keeps the look it opened with until it has faded away.
+    val opened = MaterialTheme.typography
+    val typography = remember { opened }
+    MaterialTheme(colorScheme = MaterialTheme.colorScheme, typography = typography) {
+        LanguagePage(onDone)
+    }
+}
+
+@Composable
+private fun LanguagePage(onDone: () -> Unit) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
     var lang by rememberSaveable {

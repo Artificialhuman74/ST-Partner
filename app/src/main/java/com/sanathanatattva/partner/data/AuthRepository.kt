@@ -1,6 +1,7 @@
 package com.sanathanatattva.partner.data
 
 import com.sanathanatattva.partner.data.partner.PartnerRepository
+import com.sanathanatattva.partner.data.shop.ShopRepository
 import com.sanathanatattva.partner.data.api.ApiProblem
 import com.sanathanatattva.partner.data.api.ApiResult
 import com.sanathanatattva.partner.data.api.EmailRequest
@@ -23,6 +24,7 @@ class AuthRepository(
     private val google: GoogleSignIn,
     private val push: PushRegistrar,
     private val partner: PartnerRepository,
+    private val shop: ShopRepository,
 ) {
     suspend fun logIn(email: String, password: String): ApiResult<User> =
         when (val result = apiCall { api.login(LoginRequest(email.trim(), password)) }) {
@@ -83,6 +85,7 @@ class AuthRepository(
         push.unregister()
         sessions.clear()
         partner.clearCache()
+        shop.clear()
         google.signOut()
     }
 }

@@ -109,6 +109,8 @@ class PartnerMessagingService : FirebaseMessagingService() {
                 return
             }
         }
+        // My Shop: stock running low, money paid, restock moving, a sub-dealer out of stock.
+        if (ShopAlerts.show(this, message.data)) return
         if (message.data["type"] == "order_offer") {
             OrderAlert.show(
                 this,

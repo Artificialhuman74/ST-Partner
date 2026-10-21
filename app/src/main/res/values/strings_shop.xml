@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- My Shop (canvas "ST Delivery · My Shop") and the welcome tour (canvas "ST Delivery · Welcome tour"). English for now. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="shop_tab">My Shop</string>
+    <string name="shop_title">My Shop</string>
+    <plurals name="shop_need_you">
+        <item quantity="one">%1$d product needs you</item>
+        <item quantity="other">%1$d products need you</item>
+    </plurals>
+    <plurals name="shop_finished_count">
+        <item quantity="one">%1$d finished</item>
+        <item quantity="other">%1$d finished</item>
+    </plurals>
+    <plurals name="shop_low_count">
+        <item quantity="one">%1$d running low</item>
+        <item quantity="other">%1$d running low</item>
+    </plurals>
+    <string name="shop_all_fine">All your stock is fine</string>
+    <string name="shop_all_fine_body">Nothing is running low right now.</string>
+    <string name="shop_ask">Ask for stock</string>
+    <string name="shop_stock">Stock</string>
+    <plurals name="shop_products">
+        <item quantity="one">%1$d product</item>
+        <item quantity="other">%1$d products</item>
+    </plurals>
+    <string name="shop_money">Money</string>
+    <string name="shop_money_week">%1$s this week</string>
+    <string name="shop_orders">Orders</string>
+    <string name="shop_on_the_way">%1$d on the way</string>
+    <string name="shop_none_on_the_way">Nothing on the way</string>
+    <string name="shop_people">People</string>
+    <plurals name="shop_sub_dealers">
+        <item quantity="one">%1$d sub-dealer</item>
+        <item quantity="other">%1$d sub-dealers</item>
+    </plurals>
+
+    <string name="shelf_title">Your shelf</string>
+    <string name="shelf_sub">Oil level shows how much is left</string>
+    <string name="stock_plenty">Plenty</string>
+    <string name="stock_low">Running low</string>
+    <string name="stock_finished">Finished</string>
+    <string name="shelf_left">%1$d left</string>
+    <plurals name="shelf_ask_count">
+        <item quantity="one">Ask for stock · %1$d item</item>
+        <item quantity="other">Ask for stock · %1$d items</item>
+    </plurals>
+    <string name="pack_bottle">%1$s bottle</string>
+    <string name="pack_can">%1$s can</string>
+    <string name="pack_tin">%1$s tin</string>
+    <string name="pack_bottle_plain">Bottle</string>
+    <string name="pack_can_plain">Can</string>
+    <string name="pack_tin_plain">Tin</string>
+    <string name="shelf_describe">%1$s, %2$s: %3$s</string>
+
+    <plurals name="unit_bottles">
+        <item quantity="one">bottle</item>
+        <item quantity="other">bottles</item>
+    </plurals>
+    <plurals name="unit_cans">
+        <item quantity="one">can</item>
+        <item quantity="other">cans</item>
+    </plurals>
+    <plurals name="unit_tins">
+        <item quantity="one">tin</item>
+        <item quantity="other">tins</item>
+    </plurals>
+    <string name="product_left">%1$s\nleft</string>
+    <string name="product_alert_title">Tell me when only</string>
+    <plurals name="product_alert_left">
+        <item quantity="one">%1$s is left</item>
+        <item quantity="other">%1$s are left</item>
+    </plurals>
+    <string name="product_alert_note">The dashed line on the %1$s. The admin is told too.</string>
+    <string name="product_save">Save</string>
+    <string name="product_saved">Saved. The website shows it too.</string>
+    <string name="product_ask_more">Ask for more %1$s</string>
+    <string name="one_less">One less</string>
+    <string name="one_more">One more</string>
+    <string name="shop_back">Back to My Shop</string>
+
+    <string name="ask_title">Ask for stock</string>
+    <string name="ask_body">We filled in what is low. Change the numbers if you want.</string>
+    <string name="ask_each">%1$s · ₹%2$s each</string>
+    <string name="ask_none_left">None left now</string>
+    <string name="ask_only_left">Only %1$d left now</string>
+    <string name="ask_add">Add another product</string>
+    <string name="ask_pick_title">Add a product</string>
+    <string name="ask_send">Send on WhatsApp</string>
+    <string name="ask_note">Your order is saved, then WhatsApp opens with the message ready.</string>
+    <string name="ask_failed">Couldn’t save the order. Check your internet and try again.</string>
+    <string name="ask_offline">Asking for stock needs the internet. Your list is kept until you are back online.</string>
+
+    <string name="sent_title">Order saved</string>
+    <string name="sent_sub">Order #%1$s · %2$s</string>
+    <string name="sent_step">WhatsApp is open. Press its &lt;b&gt;send&lt;/b&gt; arrow to tell the admin.</string>
+    <string name="sent_to">Message to Admin · %1$s</string>
+    <string name="sent_see">See my order</string>
+    <string name="sent_again">Open WhatsApp again</string>
+    <string name="no_whatsapp">WhatsApp isn’t on this phone.</string>
+
+    <string name="orders_title">Orders</string>
+    <string name="orders_tab_stock">Stock I asked for</string>
+    <string name="orders_tab_customers">Customer orders</string>
+    <string name="track_asked">Asked</string>
+    <string name="track_way">On the way</string>
+    <string name="track_done">Delivered</string>
+    <string name="track_cancelled">Cancelled</string>
+    <string name="orders_number">Order #%1$s</string>
+    <string name="orders_sent_on">sent %1$s</string>
+    <string name="today_at">Today, %1$s</string>
+    <string name="cust_you_delivered">You delivered it · %1$s</string>
+    <string name="cust_rider_delivered">Rider delivered it · %1$s</string>
+    <string name="cust_rider_taking">A rider is taking it</string>
+    <string name="cust_you_taking">You are taking it</string>
+    <string name="cust_waiting">Waiting to be packed</string>
+    <string name="cust_cancelled">Cancelled</string>
+    <string name="day_today">today</string>
+    <string name="day_yesterday">yesterday</string>
+    <string name="orders_none_stock">You haven’t asked for stock yet.</string>
+    <string name="orders_none_customers">No customer orders yet.</string>
+
+    <string name="money_title">Shop money</string>
+    <string name="money_sub">What you earn on your customers’ orders</string>
+    <string name="money_this_week">This week</string>
+    <string name="money_bank_day">Goes to your bank on %1$s</string>
+    <string name="money_bank_weekly">Paid to your bank every week</string>
+    <string name="money_earned">Earned so far</string>
+    <string name="money_in_bank">In your bank</string>
+    <string name="money_each_week">Each week</string>
+    <string name="money_now">Now</string>
+    <string name="money_week_of">Week of %1$s</string>
+    <string name="money_all_paid">Every week before this one is paid</string>
+    <string name="money_owed">%1$s still to be paid</string>
+
+    <string name="people_title">Your people</string>
+    <plurals name="people_sub">
+        <item quantity="one">%1$d shop joined with your code</item>
+        <item quantity="other">%1$d shops joined with your code</item>
+    </plurals>
+    <string name="people_low">%1$d low</string>
+    <string name="people_all_good">All good</string>
+    <string name="people_none">No shops have joined with your code yet.</string>
+    <string name="call">Call</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="call_who">Call %1$s</string>
+    <string name="whatsapp_who">WhatsApp %1$s</string>
+    <string name="share_code">Share my code</string>
+    <string name="share_sends">Sends an invite on WhatsApp</string>
+    <string name="share_text">Namaskara! Join Sanathana Tattva as a shop partner. Sign up at https://sanathanatattva.shop/register and enter my code %1$s.</string>
+    <string name="lucky_title">Lucky Draw</string>
+    <string name="lucky_in">%1$d of %2$d in</string>
+    <string name="lucky_not_ordered">%1$s has not ordered this month</string>
+    <plurals name="lucky_not_ordered_many">
+        <item quantity="one">%1$d customer has not ordered this month</item>
+        <item quantity="other">%1$d customers have not ordered this month</item>
+    </plurals>
+    <string name="lucky_all_in">Everyone is in this month’s draw</string>
+    <string name="lucky_none">No customers have joined yet</string>
+
+    <string name="sub_shelf">%1$s’s shelf</string>
+    <string name="sub_has_none">&lt;b&gt;%1$s has no %2$s.&lt;/b&gt; Give them a call, or remind them on WhatsApp to ask for stock.</string>
+    <string name="sub_running_low">&lt;b&gt;%1$s is running low on %2$s.&lt;/b&gt; Give them a call, or remind them on WhatsApp.</string>
+    <string name="sub_all_good">%1$s’s shelf is fine.</string>
+    <string name="remind">Remind</string>
+    <string name="remind_text">Namaskara %1$s, your %2$s is running out at your shop. Please ask for stock in the ST Delivery app.</string>
+    <string name="sub_failed">Couldn’t load this shelf. Try again in a moment.</string>
+
+    <plurals name="home_stock_low">
+        <item quantity="one">%1$d shop product running low</item>
+        <item quantity="other">%1$d shop products running low</item>
+    </plurals>
+
+    <string name="shop_empty_title">Nothing on your shelf yet</string>
+    <string name="shop_empty_body">When the admin sends you stock, it shows up here with how much is left.</string>
+    <string name="shop_empty_cta">Ask for your first stock</string>
+    <string name="shop_loading">Getting your shop…</string>
+    <string name="shop_offline_title">No internet</string>
+    <string name="shop_offline_body">These numbers are from %1$s. They update by themselves when the internet is back.</string>
+    <string name="try_again">Try again</string>
+
+    <string name="notif_ask">Ask for stock</string>
+    <string name="notif_later">Later</string>
+    <string name="notif_see_money">See money</string>
+    <string name="notif_see_order">See order</string>
+
+    <!-- Welcome tour -->
+    <string name="tour_welcome_kicker">Welcome to ST Delivery</string>
+    <string name="tour_welcome_title">Namaskara, %1$s!</string>
+    <string name="tour_welcome_body">Let me show you around the app. It takes one minute.</string>
+    <string name="tour_show_me">Show me</string>
+    <string name="tour_skip">Skip</string>
+    <string name="tour_skip_tour">Skip tour</string>
+    <string name="tour_step">Step %1$d of %2$d</string>
+    <string name="tour_bar_title">First, this yellow bar</string>
+    <string name="tour_bar_body">New orders ring like a phone call. Turn on 5 settings so the call always reaches you.</string>
+    <string name="tour_bar_prompt">Tap the yellow bar to start.</string>
+    <string name="tour_turn_on_title">Tap “Turn on”</string>
+    <string name="tour_turn_on_body">Tap &lt;b&gt;Allow&lt;/b&gt; if the phone asks.</string>
+    <string name="tour_autostart_title">Now turn on Autostart</string>
+    <string name="tour_autostart_body">Your phone stops apps it thinks are idle. Tap the &lt;b&gt;gold bar&lt;/b&gt; and follow the steps.</string>
+    <string name="tour_allset_title">All 5 are on!</string>
+    <string name="tour_allset_body">Orders will now ring through, even when the phone is locked or silent.</string>
+    <string name="tour_back_home">Back to Home</string>
+    <string name="tour_online_title">Online or offline</string>
+    <string name="tour_online_on">&lt;b&gt;Online&lt;/b&gt; means you are working. New orders ring your phone.</string>
+    <string name="tour_online_off">&lt;b&gt;Offline&lt;/b&gt; means you are resting. No orders come.</string>
+    <string name="tour_online_slide">Slide the green button when you are ready to work.</string>
+    <string name="tour_help_title">Need help? Tap here</string>
+    <string name="tour_help_body">This button calls ST support. Someone from our team will answer and help you.</string>
+    <string name="tour_dock_kicker">The %1$d buttons at the bottom</string>
+    <string name="tour_dock_home">Go online here and see today’s deliveries.</string>
+    <string name="tour_dock_shop">Your stock, money and orders. Ask the admin for stock from here.</string>
+    <string name="tour_dock_earnings">The money you made from deliveries, week by week.</string>
+    <string name="tour_dock_profile">Your details, language and alert settings. You can watch this tour again here.</string>
+    <string name="tour_next">Next</string>
+    <string name="tour_finish_title">You’re ready!</string>
+    <string name="tour_finish_body">Go online whenever you want to take orders. You can watch this again in Profile.</string>
+    <string name="tour_start">Start</string>
+    <string name="profile_tour">Show me around</string>
+</resources>

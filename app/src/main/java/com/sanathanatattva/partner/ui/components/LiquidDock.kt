@@ -94,6 +94,8 @@ data class DockItem(
     val label: String,
     val icon: ImageVector,
     val selectedIcon: ImageVector,
+    /** A small gold count on the icon ("3" on My Shop when stock needs the shop); 0 hides it. */
+    val badge: Int = 0,
 )
 
 /**
@@ -318,7 +320,8 @@ fun LiquidDock(
                             .weight(1f)
                             .fillMaxHeight()
                             .onGloballyPositioned { onItemBounds(i, it.boundsInRoot()) }
-                            .clip(RoundedCornerShape(22.dp))
+                            // No clip here: there is no ripple to shape, and it cut the top off
+                            // My Shop's count badge.
                             .selectable(
                                 selected = i == safeIndex,
                                 interactionSource = interaction,
@@ -339,18 +342,32 @@ fun LiquidDock(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
-                        Icon(
-                            imageVector = if (on > 0.5f) item.selectedIcon else item.icon,
-                            contentDescription = item.label,
-                            tint = contentColor,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .graphicsLayer {
-                                    val s = 1f + 0.08f * on
-                                    scaleX = s
-                                    scaleY = s
-                                },
-                        )
+                        Box {
+                            Icon(
+                                imageVector = if (on > 0.5f) item.selectedIcon else item.icon,
+                                contentDescription = item.label,
+                                tint = contentColor,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .graphicsLayer {
+                                        val s = 1f + 0.08f * on
+                                        scaleX = s
+                                        scaleY = s
+                                    },
+                            )
+                            if (item.badge > 0) {
+                                Box(
+                                    Modifier.align(Alignment.TopEnd).offset(x = 10.dp, y = (-6).dp).size(20.dp).clip(RoundedCornerShape(10.dp)).background(St.Gold),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text(
+                                        if (item.badge > 9) "9+" else item.badge.toString(),
+                                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 12.sp, lineHeight = 14.sp, fontWeight = FontWeight.ExtraBold),
+                                        color = St.Ink,
+                                    )
+                                }
+                            }
+                        }
                         Spacer(Modifier.height(3.dp))
                         Text(
                             text = item.label,

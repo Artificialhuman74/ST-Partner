@@ -11,6 +11,7 @@ import com.sanathanatattva.partner.alerts.OrderChannel
 import com.sanathanatattva.partner.data.api.ApiClient
 import com.sanathanatattva.partner.data.orders.OrderRepository
 import com.sanathanatattva.partner.data.partner.PartnerRepository
+import com.sanathanatattva.partner.data.shop.ShopRepository
 import com.sanathanatattva.partner.data.signup.BankLookup
 import com.sanathanatattva.partner.data.signup.RiderRepository
 import com.sanathanatattva.partner.data.signup.SignupDraftStore
@@ -47,7 +48,8 @@ class AppContainer(context: Context) {
     val push by lazy { PushRegistrar(context, api, sessions) }
     val partner by lazy { PartnerRepository(api) }
     val orders by lazy { OrderRepository(api) }
-    val auth by lazy { AuthRepository(api, sessions, google, push, partner) }
+    val shop by lazy { ShopRepository(api) }
+    val auth by lazy { AuthRepository(api, sessions, google, push, partner, shop) }
     val riders by lazy { RiderRepository(api, sessions, google, SignupDraftStore(context), push) }
     val banks by lazy { BankLookup() }
 }
