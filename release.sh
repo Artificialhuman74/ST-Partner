@@ -92,7 +92,8 @@ play() {
   code=${out##*$'\n'}
   out=${out%$'\n'*}
   if [[ $code != 2* ]]; then
-    echo "Google Play said ($code): $(jq -r '.error.message // empty' <<<"$out" 2>/dev/null || true)" >&2
+    PLAY_ERROR=$(jq -r '.error.message // empty' <<<"$out" 2>/dev/null || true)
+    echo "Google Play said ($code): $PLAY_ERROR" >&2
     return 1
   fi
   printf '%s' "$out"
@@ -156,20 +157,32 @@ fi
 
 step "Uploading to Google Play ($TRACK)"
 play_login # the build can outlast a token's first minutes; a fresh one costs nothing
-open_edit || die "Couldn't open a Play edit."
-play POST "$UPLOAD_API/edits/$EDIT/bundles?uploadType=media" \
-  -H 'Content-Type: application/octet-stream' --data-binary @"$aab" --max-time 1200 >/dev/null ||
-  die "The bundle upload failed."
+PLAY_ERROR=""
 
-release=$(jq -nc --arg name "$name" --arg code "$code" --arg status "$status" --arg notes "$notes" --arg rollout "$rollout" '
-  { name: $name, versionCodes: [$code], status: $status }
-  + (if $notes == "" then {} else { releaseNotes: [{ language: "en-US", text: $notes }] } end)
-  + (if $rollout == "" then {} else { userFraction: (($rollout | tonumber) / 100) } end)')
-play PUT "$API/edits/$EDIT/tracks/$TRACK" -H 'Content-Type: application/json' \
-  -d "$(jq -nc --arg track "$TRACK" --argjson release "$release" '{ track: $track, releases: [$release] }')" >/dev/null ||
-  die "Play didn't accept the release on the $TRACK track. Try --track alpha or --draft."
-play POST "$API/edits/$EDIT:commit" >/dev/null || die "Play didn't accept the release."
-EDIT=""
+# One edit: upload the bundle, put it on the track, commit. A failed commit throws the edit away.
+send_release() {
+  local release
+  open_edit || return 1
+  play POST "$UPLOAD_API/edits/$EDIT/bundles?uploadType=media" \
+    -H 'Content-Type: application/octet-stream' --data-binary @"$aab" --max-time 1200 >/dev/null || return 1
+  release=$(jq -nc --arg name "$name" --arg code "$code" --arg status "$status" --arg notes "$notes" --arg rollout "$rollout" '
+    { name: $name, versionCodes: [$code], status: $status }
+    + (if $notes == "" then {} else { releaseNotes: [{ language: "en-US", text: $notes }] } end)
+    + (if $rollout == "" then {} else { userFraction: (($rollout | tonumber) / 100) } end)')
+  play PUT "$API/edits/$EDIT/tracks/$TRACK" -H 'Content-Type: application/json' \
+    -d "$(jq -nc --arg track "$TRACK" --argjson release "$release" '{ track: $track, releases: [$release] }')" >/dev/null || return 1
+  play POST "$API/edits/$EDIT:commit" >/dev/null || return 1
+  EDIT=""
+}
+
+if ! send_release; then
+  # Until an app's first release is published, Play takes only drafts.
+  [[ $status != draft && $PLAY_ERROR == *"draft app"* ]] || die "Play didn't accept the release on the $TRACK track."
+  play DELETE "$API/edits/$EDIT" >/dev/null 2>&1 || true
+  echo "This app hasn't been published yet, so Play only takes drafts. Sending it as a draft."
+  status=draft rollout=""
+  send_release || die "Play didn't accept the release on the $TRACK track."
+fi
 
 case $status in
   draft) echo "Uploaded as a draft. Open Play Console → $TRACK and press Roll out." ;;
