@@ -38,6 +38,8 @@ object StIcons {
     val Shop by lazy { line("shop", 2.2f, "M4 9l1.5-5h13L20 9", "M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9", "M5.5 11.5V20h13v-8.5", "M10 20v-5h4v5") }
     val Pin by lazy { line("pin", 2.2f, "M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z", "M9.4 9.5a2.6 2.6 0 1 0 5.2 0a2.6 2.6 0 1 0-5.2 0") }
     val Plus by lazy { line("plus", 2.4f, "M12 5v14M5 12h14") }
+    val Download by lazy { line("download", 2.2f, "M12 15V3", "M7 10l5 5 5-5", "M5 21h14") }
+    val Info by lazy { line("info", 2.2f, "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0", "M12 8v5", "M12 16h.01") }
     val Sun by lazy { line("sun", 2f, "M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0", "M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4") }
     val NoHelmet by lazy { line("no_helmet", 2f, "M4 15a8 8 0 0 1 16 0z", "M2 15h20", "M3 3l18 18") }
     val NoGlasses by lazy { line("no_glasses", 2f, "M3 14a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0", "M14 14a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0", "M10 14h4", "M3 3l18 18") }

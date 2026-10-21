@@ -39,6 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +67,7 @@ fun ProfileScreen(onOpen: (ProfileLink) -> Unit, onLoggedOut: () -> Unit) {
     val context = LocalContext.current
     val container = context.appContainer
     val scope = rememberCoroutineScope()
+    val haptics = LocalHapticFeedback.current
     val session by container.sessions.session.collectAsState(initial = container.sessions.latest)
     val user = session?.user
     var places by remember { mutableStateOf(container.partner.lastPlaces.orEmpty()) }
@@ -148,6 +151,8 @@ fun ProfileScreen(onOpen: (ProfileLink) -> Unit, onLoggedOut: () -> Unit) {
             }
             RowLink(StIcons.Headset, stringResource(R.string.profile_support), null) { context.dialSupport() }
             RowLink(StIcons.ArrowLeft, stringResource(R.string.profile_log_out), null, danger = true) {
+                // Logging out settles softly (design canvas "Haptics").
+                haptics.performHapticFeedback(HapticFeedbackType.ToggleOff)
                 scope.launch {
                     if (OnlineService.running.value) {
                         container.partner.goOffline()

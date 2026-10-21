@@ -38,8 +38,8 @@ android {
         // 26: notification channels and full-screen alerts are core to the app.
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.1.2"
+        versionCode = 4
+        versionName = "0.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -126,6 +126,7 @@ dependencies {
     implementation(libs.androidx.exifinterface)
     implementation(libs.play.services.location)
     implementation(libs.maplibre.android)
+    implementation(libs.play.app.update)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

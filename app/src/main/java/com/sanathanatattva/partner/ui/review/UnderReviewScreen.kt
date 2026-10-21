@@ -61,6 +61,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import com.sanathanatattva.partner.R
 import com.sanathanatattva.partner.appContainer
 import com.sanathanatattva.partner.ui.components.Emblem
@@ -104,6 +106,7 @@ import java.util.Locale
 fun UnderReviewScreen(onLoggedOut: () -> Unit, onApproved: (firstName: String) -> Unit, onSentBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val logOutHaptics = LocalHapticFeedback.current
     val container = context.appContainer
     var sentAt by remember { mutableStateOf<String?>(null) }
     // "We'll send you a notification": ask once, right where that promise is made.
@@ -167,7 +170,7 @@ fun UnderReviewScreen(onLoggedOut: () -> Unit, onApproved: (firstName: String) -
             Emblem(40.dp)
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge.copy(fontSize = MaterialTheme.typography.titleLarge.fontSize * (20f / 22f)), color = St.GreenDeep, modifier = Modifier.weight(1f))
             TextButton(
-                onClick = { scope.launch { context.appContainer.auth.logOut(); onLoggedOut() } },
+                onClick = { logOutHaptics.performHapticFeedback(HapticFeedbackType.ToggleOff); scope.launch { context.appContainer.auth.logOut(); onLoggedOut() } },
                 modifier = Modifier.heightIn(min = 48.dp),
             ) {
                 Text(stringResource(R.string.review_log_out), style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight(650)), color = St.Green)

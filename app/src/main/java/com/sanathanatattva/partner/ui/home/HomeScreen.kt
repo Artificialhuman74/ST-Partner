@@ -104,8 +104,10 @@ fun HomeScreen(
     val vm: HomeViewModel = viewModel()
     val session by context.appContainer.sessions.session.collectAsState(initial = context.appContainer.sessions.latest)
     var picking by rememberSaveable { mutableStateOf(false) }
+    val signOutHaptics = LocalHapticFeedback.current
     LifecycleResumeEffect(Unit) {
-        vm.refresh(onSignedOut)
+        // Session expired: a double buzz as it goes back to login.
+        vm.refresh { signOutHaptics.performHapticFeedback(HapticFeedbackType.Reject); onSignedOut() }
         // Came back from "Go online" on the alert checklist: straight to choosing a start place.
         val repo = context.appContainer.partner
         if (repo.wantsToGoOnline) {

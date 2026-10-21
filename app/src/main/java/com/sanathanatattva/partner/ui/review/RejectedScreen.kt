@@ -50,6 +50,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.foundation.BorderStroke
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -232,6 +234,7 @@ fun RejectedScreen(onResent: () -> Unit, onLoggedOut: () -> Unit) {
     val context = LocalContext.current
     val container = context.appContainer
     val scope = rememberCoroutineScope()
+    val logOutHaptics = LocalHapticFeedback.current
     val vm: RejectedViewModel = viewModel { RejectedViewModel(container.riders) }
     LaunchedEffect(vm) { vm.resentEvents.collect { onResent() } }
     var shooting by remember { mutableStateOf<KycPhoto?>(null) }
@@ -256,7 +259,7 @@ fun RejectedScreen(onResent: () -> Unit, onLoggedOut: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Emblem(40.dp)
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge, color = St.GreenDeep, modifier = Modifier.weight(1f))
-            TextButton(onClick = { scope.launch { container.auth.logOut(); onLoggedOut() } }, modifier = Modifier.heightIn(min = 48.dp)) {
+            TextButton(onClick = { logOutHaptics.performHapticFeedback(HapticFeedbackType.ToggleOff); scope.launch { container.auth.logOut(); onLoggedOut() } }, modifier = Modifier.heightIn(min = 48.dp)) {
                 Text(stringResource(R.string.review_log_out), style = MaterialTheme.typography.labelMedium, color = St.Green)
             }
         }

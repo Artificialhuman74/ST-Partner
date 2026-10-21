@@ -707,4 +707,13 @@
     <string name="missing_base">Base address</string>
     <string name="missing_base_body">Where you start your deliveries</string>
     <string name="missing_cta">Add phone number</string>
+    <!-- Update screen after the splash (design canvas "Update, ST Delivery") -->
+    <string name="update_label">NEW VERSION</string>
+    <string name="update_title">A new version is ready</string>
+    <string name="update_body">Update ST Delivery from the Play Store to get the newest fixes.</string>
+    <string name="update_required_title">Update to keep taking orders</string>
+    <string name="update_required_body">This version can’t receive new orders any more. Updating takes about a minute.</string>
+    <string name="update_note">Orders you’ve already accepted stay yours. Open the app again after updating to finish them.</string>
+    <string name="update_button">Update on Play Store</string>
+    <string name="update_later">Later</string>
 </resources>

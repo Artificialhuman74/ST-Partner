@@ -61,4 +61,13 @@
     <string name="home_going_offline">ಆಫ್‌ಲೈನ್ ಆಗುತ್ತಿದೆ…</string>
     <string name="signup_you">ನೀವು</string>
     <string name="signup_checking">ಪರಿಶೀಲಿಸುತ್ತಿದೆ…</string>
+    <!-- Update screen after the splash -->
+    <string name="update_label">ಹೊಸ ಆವೃತ್ತಿ</string>
+    <string name="update_title">ಹೊಸ ಆವೃತ್ತಿ ಸಿದ್ಧವಾಗಿದೆ</string>
+    <string name="update_body">ಹೊಸ ಸರಿಪಡಿಕೆಗಳಿಗಾಗಿ Play Store ನಿಂದ ST Delivery ಅಪ್‌ಡೇಟ್ ಮಾಡಿ.</string>
+    <string name="update_required_title">ಆರ್ಡರ್‌ಗಳನ್ನು ಪಡೆಯುತ್ತಲೇ ಇರಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</string>
+    <string name="update_required_body">ಈ ಆವೃತ್ತಿಗೆ ಇನ್ನು ಹೊಸ ಆರ್ಡರ್‌ಗಳು ಬರುವುದಿಲ್ಲ. ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸುಮಾರು ಒಂದು ನಿಮಿಷ ಸಾಕು.</string>
+    <string name="update_note">ನೀವು ಈಗಾಗಲೇ ಒಪ್ಪಿಕೊಂಡ ಆರ್ಡರ್‌ಗಳು ನಿಮ್ಮದೇ. ಅವುಗಳನ್ನು ಮುಗಿಸಲು ಅಪ್‌ಡೇಟ್ ನಂತರ ಆಪ್ ಮತ್ತೆ ತೆರೆಯಿರಿ.</string>
+    <string name="update_button">Play Store ನಲ್ಲಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</string>
+    <string name="update_later">ನಂತರ</string>
 </resources>

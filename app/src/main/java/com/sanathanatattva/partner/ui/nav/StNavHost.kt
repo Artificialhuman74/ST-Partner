@@ -13,6 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import com.sanathanatattva.partner.data.UpdateOffer
+import com.sanathanatattva.partner.data.checkForUpdate
+import com.sanathanatattva.partner.ui.update.UpdateScreen
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -86,6 +93,22 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
         val showing = dest.hasRoute<OrderRoute>() && entry?.toRoute<OrderRoute>()?.orderId == id
         if (!showing) nav.navigate(OrderRoute(id))
     }
+    // A newer version on the Play Store is offered once the splash hands off, once per launch.
+    // An optional one that's slow to be known isn't sprung on someone already working;
+    // a required one (below the server's minimum) always shows.
+    val context = LocalContext.current
+    val splashing = entry?.destination?.hasRoute<SplashRoute>() != false
+    var update by remember { mutableStateOf<UpdateOffer?>(null) }
+    var updateDone by rememberSaveable { mutableStateOf(false) }
+    var splashEndedAt by remember { mutableLongStateOf(0L) }
+    LaunchedEffect(splashing) { if (!splashing && splashEndedAt == 0L) splashEndedAt = System.currentTimeMillis() }
+    LaunchedEffect(Unit) {
+        if (updateDone) return@LaunchedEffect
+        val offer = checkForUpdate(context.applicationContext, container.api)
+        val late = splashEndedAt > 0 && System.currentTimeMillis() - splashEndedAt > 2_000
+        if (offer != null && (offer.required || !late)) update = offer else updateDone = true
+    }
+
     val dock = remember { DockState() }
     CompositionLocalProvider(LocalDockState provides dock) {
     Box(modifier.fillMaxSize()) {
@@ -221,6 +244,8 @@ fun StNavHost(modifier: Modifier = Modifier, nav: NavHostController = rememberNa
             onSelect = { nav.toTab(HomeTab.entries[it]) },
         )
     }
+    val offer = update
+    if (!splashing && offer != null && !updateDone) UpdateScreen(offer, onLater = { updateDone = true })
     }
     }
 }

@@ -62,6 +62,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
@@ -108,7 +110,16 @@ fun LoginScreen(onLoggedIn: (User) -> Unit, onJoin: (viaGoogle: Boolean) -> Unit
     var sheet by rememberSaveable { mutableStateOf(LoginSheet.None) }
     val resources = LocalResources.current
 
-    LaunchedEffect(vm) { vm.loggedInEvents.collect(onLoggedIn) }
+    // Login feels (design canvas "Haptics"): a firm tap when it works, a double buzz when it doesn't.
+    val haptics = LocalHapticFeedback.current
+    LaunchedEffect(vm) {
+        vm.loggedInEvents.collect {
+            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+            onLoggedIn(it)
+        }
+    }
+    val failed = vm.formError ?: vm.emailError ?: vm.passwordError
+    LaunchedEffect(failed) { if (failed != null) haptics.performHapticFeedback(HapticFeedbackType.Reject) }
     LaunchedEffect(vm) {
         vm.noticeEvents.collect { notice ->
             snackbar.showSnackbar(
@@ -168,7 +179,10 @@ fun LoginScreen(onLoggedIn: (User) -> Unit, onJoin: (viaGoogle: Boolean) -> Unit
                     minHeight = sheetHeight,
                     compact = compact,
                     onForgot = { vm.clearReset(); sheet = LoginSheet.Forgot },
-                    onGoogle = { vm.logInWithGoogle { context.appContainer.google.signIn(context) } },
+                    onGoogle = {
+                        haptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        vm.logInWithGoogle { context.appContainer.google.signIn(context) }
+                    },
                     onJoin = { onJoin(false) },
                 )
             }
@@ -204,6 +218,7 @@ private fun LoginForm(
     onJoin: () -> Unit,
 ) {
     val focus = LocalFocusManager.current
+    val haptics = LocalHapticFeedback.current
     var shown by rememberSaveable { mutableStateOf(false) }
     Column(
         Modifier
@@ -268,7 +283,7 @@ private fun LoginForm(
             text = stringResource(R.string.login_button),
             arrow = false,
             loading = vm.loading,
-            onClick = { focus.clearFocus(); vm.logIn() },
+            onClick = { haptics.performHapticFeedback(HapticFeedbackType.ContextClick); focus.clearFocus(); vm.logIn() },
         )
         Spacer(Modifier.height(if (compact) 10.dp else 14.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {

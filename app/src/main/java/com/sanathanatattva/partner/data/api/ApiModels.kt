@@ -352,3 +352,10 @@ data class SuccessResponse(val success: Boolean = false)
 /** Every error the website returns looks like `{ "error": "..." }`; form errors add `fields`. */
 @Serializable
 data class ErrorBody(val error: String? = null, val fields: Map<String, String> = emptyMap())
+
+/** GET api/public/app-version: builds below min_version_code must update before they open. */
+@Serializable
+data class AppVersionRule(val min_version_code: Int = 0)
+
+@Serializable
+data class AppVersions(val delivery: AppVersionRule = AppVersionRule())

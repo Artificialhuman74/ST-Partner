@@ -31,6 +31,10 @@ interface PartnerApi {
     @HTTP(method = "DELETE", path = "api/devices", hasBody = true)
     suspend fun unregisterDevice(@Body body: DeviceToken): SuccessResponse
 
+    // The oldest build allowed to run (admin → Settings → App updates)
+    @GET("api/public/app-version")
+    suspend fun appVersions(): AppVersions
+
     // A partner's own status (backend/src/routes/partner.js)
     @GET("api/partner/home")
     suspend fun partnerHome(): PartnerHome
