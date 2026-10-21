@@ -6,7 +6,7 @@
 #   4. commits the version bump, tags it (v<versionName>) and pushes both
 #
 #   ./release.sh --notes "Live order tracking on the order page"
-#   ./release.sh --track internal         production (default) | beta (open) | alpha (closed) | internal
+#   ./release.sh --track internal         production | beta (open) | alpha (closed, default) | internal
 #   ./release.sh --rollout 20             staged rollout to 20% of users
 #   ./release.sh --draft                  upload, then press "Roll out" yourself in Play Console
 #   ./release.sh --name 8.0               choose the version name instead of bumping the last number
@@ -20,7 +20,7 @@ set -euo pipefail
 
 PACKAGE=com.sanathanatattva.delivery
 AAB_PREFIX=st-delivery
-TRACK=production
+TRACK=alpha # closed testing; switch to production once Play grants production access
 
 cd "$(dirname "$0")"
 GRADLE_FILE=app/build.gradle.kts
