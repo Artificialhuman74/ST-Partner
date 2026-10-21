@@ -1,16 +1,22 @@
 package com.sanathanatattva.partner.data.api
 
 import com.sanathanatattva.partner.BuildConfig
+import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    fun create(tokenProvider: () -> String?): PartnerApi {
+    /**
+     * [cacheDir]: a 20 MB HTTP cache. The server sends a tag with every answer, so asking again
+     * gets "unchanged" with no body when nothing moved.
+     */
+    fun create(cacheDir: File, tokenProvider: () -> String?): PartnerApi {
         check(BuildConfig.BASE_URL.isNotBlank()) {
             "BASE_URL is empty. Set st.prodBaseUrl in gradle.properties for release builds."
         }
@@ -21,6 +27,7 @@ object ApiClient {
             chain.proceed(request)
         }
         val client = OkHttpClient.Builder()
+            .cache(Cache(File(cacheDir, "http"), 20L * 1024 * 1024))
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)

@@ -44,7 +44,7 @@ class AppContainer(context: Context) {
     val settings = SettingsStore(context)
     val sessions = SessionStore(context)
     val google = GoogleSignIn(context)
-    val api by lazy { ApiClient.create { sessions.token } }
+    val api by lazy { ApiClient.create(context.cacheDir) { sessions.token } }
     val push by lazy { PushRegistrar(context, api, sessions) }
     val partner by lazy { PartnerRepository(api) }
     val orders by lazy { OrderRepository(api) }

@@ -67,9 +67,11 @@ android {
         release {
             buildConfigField("String", "BASE_URL", "\"$prodBaseUrl\"")
             if (uploadKey != null) signingConfig = signingConfigs.getByName("upload")
-            optimization {
-                enable = false
-            }
+            // R8: shrinks, optimises and obfuscates the release build (smaller download, faster start
+            // and screens). Keep rules beyond the libraries' own are in proguard-rules.pro.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
