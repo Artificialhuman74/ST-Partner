@@ -235,6 +235,15 @@ private fun NavHostController.toTab(tab: HomeTab) {
         HomeTab.Earnings -> EarningsRoute
         HomeTab.Profile -> ProfileRoute
     }
+    // Already there: leave the screen be. Navigating would pop and rebuild it (Home's
+    // pop finds nothing to pop and falls through to replaceAll), reloading it each tap.
+    val here = currentDestination
+    if (here != null && when (tab) {
+            HomeTab.Home -> here.hasRoute<HomeRoute>()
+            HomeTab.Earnings -> here.hasRoute<EarningsRoute>()
+            HomeTab.Profile -> here.hasRoute<ProfileRoute>()
+        }
+    ) return
     if (tab == HomeTab.Home) {
         if (!popBackStack(HomeRoute, inclusive = false)) replaceAll(HomeRoute)
         return

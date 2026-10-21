@@ -327,7 +327,14 @@ fun LiquidDock(
                                 // pill at the target before the real one slides in.
                                 indication = null,
                                 role = Role.Tab,
-                                onClick = { if (i != safeIndex) haptics.performHapticFeedback(HapticFeedbackType.SegmentTick); onSelect(i) },
+                                // The tab already open stays as it is: no navigation, so
+                                // its screen never reloads from a repeat tap.
+                                onClick = {
+                                    if (i != safeIndex) {
+                                        haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                        onSelect(i)
+                                    }
+                                },
                             ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,

@@ -27,6 +27,9 @@ sealed interface StartPoint {
     data class Here(val lat: Double, val lng: Double) : StartPoint
 }
 
+/** How long Profile's start places and bank details stand in for the server. */
+const val SETTLED_MAX_AGE_MS = 3 * 60 * 60 * 1000L
+
 class PartnerRepository(private val api: PartnerApi) {
     // Last answers, so tabs open fully drawn and refresh in place instead of flashing empty.
     @Volatile var lastHome: PartnerHome? = null
@@ -37,6 +40,18 @@ class PartnerRepository(private val api: PartnerApi) {
         private set
     @Volatile var lastPayout: Payout? = null
         private set
+    @Volatile private var placesAt = 0L
+    @Volatile private var payoutAt = 0L
+
+    /**
+     * Start places and bank details only change when the partner edits them, so Profile
+     * reuses an answer under [SETTLED_MAX_AGE_MS] old instead of asking on every visit.
+     * (Home, Earnings and the Payout page are live and always ask.)
+     */
+    val placesFresh: Boolean get() = lastPlaces != null && fresh(placesAt)
+    val payoutFresh: Boolean get() = lastPayout != null && fresh(payoutAt)
+
+    private fun fresh(at: Long) = System.currentTimeMillis() - at in 0 until SETTLED_MAX_AGE_MS
 
     /** Set by "Go online" on the alert checklist; Home opens the start-place picker and clears it. */
     @Volatile var wantsToGoOnline = false
@@ -46,10 +61,12 @@ class PartnerRepository(private val api: PartnerApi) {
         lastPlaces = null
         lastEarnings = null
         lastPayout = null
+        placesAt = 0L
+        payoutAt = 0L
     }
 
     suspend fun home(): ApiResult<PartnerHome> = apiCall { api.partnerHome() }.also { r ->
-        if (r is ApiResult.Success) { lastHome = r.value; lastPlaces = r.value.places }
+        if (r is ApiResult.Success) { lastHome = r.value; lastPlaces = r.value.places; placesAt = System.currentTimeMillis() }
     }
 
     suspend fun goOnline(from: StartPoint, lat: Double? = null, lng: Double? = null) = apiCall {
@@ -64,7 +81,7 @@ class PartnerRepository(private val api: PartnerApi) {
     suspend fun sendLocation(lat: Double, lng: Double, accuracy: Float?) = apiCall { api.sendLocation(LocationBody(lat, lng, accuracy)) }
 
     suspend fun places(): ApiResult<List<Place>> = when (val r = apiCall { api.places() }) {
-        is ApiResult.Success -> ApiResult.Success(r.value.places).also { lastPlaces = it.value }
+        is ApiResult.Success -> ApiResult.Success(r.value.places).also { lastPlaces = it.value; placesAt = System.currentTimeMillis() }
         is ApiResult.Failure -> r
     }
 
@@ -75,7 +92,9 @@ class PartnerRepository(private val api: PartnerApi) {
     suspend fun testAlert() = apiCall { api.testAlert() }
 
     suspend fun earnings(days: Int = 7) = apiCall { api.earnings(days) }.also { r -> if (r is ApiResult.Success) lastEarnings = r.value }
-    suspend fun payout() = apiCall { api.payout() }.also { r -> if (r is ApiResult.Success) lastPayout = r.value }
+    suspend fun payout() = apiCall { api.payout() }.also { r ->
+        if (r is ApiResult.Success) { lastPayout = r.value; payoutAt = System.currentTimeMillis() }
+    }
     suspend fun hours() = apiCall { api.hours() }
     suspend fun saveHours(days: List<DayHours>) = apiCall { api.saveHours(HoursBody(days)) }
     suspend fun setRiderJobs(on: Boolean) = apiCall { api.setRiderJobs(RiderJobsBody(on)) }

@@ -71,8 +71,14 @@ fun ProfileScreen(onOpen: (ProfileLink) -> Unit, onLoggedOut: () -> Unit) {
     var missing by remember { mutableStateOf(AlertReadiness.check(context).missing.size) }
     LifecycleResumeEffect(Unit) {
         missing = AlertReadiness.check(context).missing.size
-        scope.launch { (container.partner.places() as? ApiResult.Success)?.let { places = it.value } }
-        scope.launch {
+        // Start places and the bank change only when the partner edits them (Start places
+        // refreshes the saved list after each edit, and Home on every visit), so Profile
+        // draws the last answer and only asks again once it's 3 hours old.
+        places = container.partner.lastPlaces.orEmpty()
+        if (!container.partner.placesFresh) {
+            scope.launch { (container.partner.places() as? ApiResult.Success)?.let { places = it.value } }
+        }
+        if (!container.partner.payoutFresh) scope.launch {
             (container.partner.payout() as? ApiResult.Success)?.value?.ifsc?.let { container.banks.describe(it) }
         }
         onPauseOrDispose { }
