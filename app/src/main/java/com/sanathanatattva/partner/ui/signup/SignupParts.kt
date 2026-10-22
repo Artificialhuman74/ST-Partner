@@ -86,7 +86,8 @@ import java.io.File
 /**
  * Every signup step: back + "Join as a partner" + "Step n of N", the segmented
  * progress bar (done green, current gold, rest sand), title, body, scrolling content,
- * and one big action pinned at the bottom.
+ * and one big action pinned at the bottom. Screens outside signup that reuse it (editing a
+ * start place from Profile) pass their own [header].
  */
 @Composable
 fun SignupFrame(
@@ -101,6 +102,7 @@ fun SignupFrame(
     actionEnabled: Boolean = true,
     actionIcon: ImageVector? = null,
     footer: @Composable (() -> Unit)? = null,
+    header: String = stringResource(R.string.signup_title),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
@@ -115,7 +117,7 @@ fun SignupFrame(
                 Icon(StIcons.ArrowLeft, contentDescription = stringResource(R.string.signup_back), tint = St.Ink, modifier = Modifier.size(26.dp))
             }
             Text(
-                stringResource(R.string.signup_title),
+                header,
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
                 color = St.Ink,
                 modifier = Modifier.weight(1f).graphicsLayer { translationX = -12.dp.toPx() },

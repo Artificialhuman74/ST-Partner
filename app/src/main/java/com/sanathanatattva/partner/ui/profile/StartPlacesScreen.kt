@@ -238,6 +238,7 @@ private fun PlaceEditor(place: Place?, canDelete: Boolean, onClose: () -> Unit, 
     var error by remember { mutableStateOf<UiText?>(null) }
     SignupFrame(
         stepNumber = 0, stepCount = 0,
+        header = stringResource(R.string.profile_start_places),
         title = stringResource(if (place == null) R.string.places_add else R.string.signup_base_edit),
         body = stringResource(R.string.signup_base_body),
         onBack = onClose,
