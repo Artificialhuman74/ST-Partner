@@ -56,26 +56,33 @@ class OrderViewModel(app: Application, saved: SavedStateHandle) : AndroidViewMod
         private set
 
     private var poller: Job? = null
+    private var locator: Job? = null
     private var lastStage: String? = null
 
     fun start() {
-        if (poller?.isActive == true) return
-        poller = viewModelScope.launch {
-            while (isActive) {
-                refresh()
-                delay(if (order?.stage in setOf("rider_assigned", "returning", "rider_search")) 3_000 else 6_000)
+        if (poller?.isActive != true) {
+            poller = viewModelScope.launch {
+                while (isActive) {
+                    refresh()
+                    delay(if (order?.stage in setOf("rider_assigned", "returning", "rider_search")) 3_000 else 6_000)
+                }
             }
         }
-        viewModelScope.launch {
-            while (isActive) {
-                currentLocation(getApplication())?.let { me = it }
-                delay(10_000)
+        // Stopped with the poller: it used to keep running in the background, and every return
+        // to the screen started another one alongside it.
+        if (locator?.isActive != true) {
+            locator = viewModelScope.launch {
+                while (isActive) {
+                    currentLocation(getApplication())?.let { me = it }
+                    delay(10_000)
+                }
             }
         }
     }
 
     fun stop() {
         poller?.cancel()
+        locator?.cancel()
     }
 
     suspend fun refresh() {

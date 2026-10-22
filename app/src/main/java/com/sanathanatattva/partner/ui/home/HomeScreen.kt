@@ -68,6 +68,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sanathanatattva.partner.R
 import com.sanathanatattva.partner.alerts.AlertCheck
@@ -126,11 +129,15 @@ fun HomeScreen(
         val shopJob = if (user != null && !user.isRider) homeScope.launch { context.appContainer.shop.refreshIfStale(user.tier == 1) } else null
         onPauseOrDispose { shopJob?.cancel() }
     }
-    // Keep the "near you" dot honest while online.
-    LaunchedEffect(vm.home?.online) {
-        while (vm.home?.online == true) {
-            delay(20_000)
-            vm.refreshHere()
+    // Keep the "near you" dot honest while online, and only while Home is on screen.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(vm.home?.online, lifecycleOwner) {
+        if (vm.home?.online != true) return@LaunchedEffect
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (vm.home?.online == true) {
+                delay(20_000)
+                vm.refreshHere()
+            }
         }
     }
 
