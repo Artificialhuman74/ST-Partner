@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.maplibre.android.MapLibre
 
 class PartnerApp : Application() {
     lateinit var container: AppContainer
@@ -30,7 +29,7 @@ class PartnerApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
-        MapLibre.getInstance(this)
+        // The map library starts with the first map (LiveMap), not with every launch.
         Channels.create(this)
         OrderChannel.ensure(this)
         OnlineService.ensureChannel(this)

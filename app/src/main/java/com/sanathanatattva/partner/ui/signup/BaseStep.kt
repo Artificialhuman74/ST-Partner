@@ -1,6 +1,7 @@
 package com.sanathanatattva.partner.ui.signup
 
 import androidx.compose.animation.core.EaseOut
+import org.maplibre.android.MapLibre
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -287,6 +288,8 @@ fun LiveMap(
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val mapView = remember {
+        // Started here rather than at app launch, so a launch that shows no map doesn't pay for it. Safe to repeat.
+        MapLibre.getInstance(context.applicationContext)
         MapView(context).apply {
             onCreate(null)
             getMapAsync { map ->
